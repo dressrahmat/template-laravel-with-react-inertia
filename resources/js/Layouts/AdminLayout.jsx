@@ -192,7 +192,7 @@ export default function AdminLayout({ children, title }) {
                         </div>
                     </div>
                 </header>
-                <main className="flex-1 overflow-y-auto p-1 bg-gray-50 dark:bg-gray-900">
+                <main className="flex-1 overflow-y-auto p-1 pt-3 bg-gray-50 dark:bg-gray-900">
                     {children}
                 </main>
             </div>

@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -63,13 +65,22 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB max
         ]);
 
-        User::create([
+        $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ]);
+        ];
+
+        // Handle photo upload
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store('user-photos', 'public');
+            $userData['foto_path'] = $path;
+        }
+
+        User::create($userData);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User created successfully.');
@@ -106,10 +117,60 @@ class UserController extends Controller
             $data['password'] = Hash::make($request->password);
         }
 
-        $user->update($data);
+        try {
+            $user->update($data);
+            
+            return redirect()->route('admin.users.index')
+                ->with('success', 'User updated successfully.');
+                
+        } catch (\Exception $e) {
+            
+            return back()->with('error', 'Failed to update user: ' . $e->getMessage());
+        }
+    }
 
-        return redirect()->route('admin.users.index')
-            ->with('success', 'User updated successfully.');
+    public function updatePhoto(Request $request, User $user)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        try {
+            // Delete old photo if exists
+            if ($user->foto_path && Storage::disk('public')->exists($user->foto_path)) {
+                Storage::disk('public')->delete($user->foto_path);
+            }
+            
+            // Store new photo - MIRIP DENGAN STORE
+            $path = $request->file('foto')->store('user-photos', 'public');
+            
+            // Update user
+            $user->update(['foto_path' => $path]);
+
+            return back()->with('success', 'Profile photo updated successfully.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update foto user: ' . $e->getMessage());
+        }
+    }
+
+    // Tambahkan method removePhoto
+    public function removePhoto(User $user)
+    {
+        try {
+            // Delete photo from storage
+            if ($user->foto_path && Storage::disk('public')->exists($user->foto_path)) {
+                Storage::disk('public')->delete($user->foto_path);
+            }
+            
+            // Update user record
+            $user->update(['foto_path' => null]);
+
+            return back()->with('success', 'Profile photo removed successfully.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to remove photo: ' . $e->getMessage());
+        }
     }
 
     public function destroy(User $user)

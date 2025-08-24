@@ -230,6 +230,10 @@ export default function UsersIndex({ users, filters: initialFilters }) {
     }
   }, [users, selectedUsers]);
 
+  const handleRowClick = useCallback((user) => {
+    router.visit(route('admin.users.show', user.id));
+  }, []);
+
   // Handle select/deselect all users
   const handleSelectAll = useCallback(() => {
     if (users && users.data) {
@@ -578,6 +582,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
             emptyState={emptyState}
             rowActions={rowActions}
             keyField="id"
+            onRowClick={handleRowClick} // Tambahkan prop onRowClick
           />
         </div>
 

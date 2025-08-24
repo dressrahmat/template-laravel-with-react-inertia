@@ -36,6 +36,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/users/bulk-destroy', [UserController::class, 'bulkDestroy'])->name('users.bulk-destroy');
         Route::post('/users/export', [UserController::class, 'export'])->name('users.export');
         Route::put('/users/bulk-update', [UserController::class, 'bulkUpdate'])->name('users.bulk-update');
+        Route::post('/users/{user}/update-photo', [UserController::class, 'updatePhoto'])
+        ->name('users.update-photo');
+        Route::post('users/{user}/remove-photo', [\App\Http\Controllers\Admin\UserController::class, 'removePhoto'])
+        ->name('users.remove-photo');
     });
 });
 

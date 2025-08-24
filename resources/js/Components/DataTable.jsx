@@ -13,7 +13,8 @@ const DataTable = ({
   selectAll = false,
   emptyState = null,
   rowActions = () => {},
-  keyField = 'id'
+  keyField = 'id',
+  onRowClick = null // Tambahkan prop onRowClick
 }) => {
   return (
     <div className="bg-white dark:bg-slate-800 shadow rounded-lg overflow-hidden mb-20">
@@ -57,9 +58,16 @@ const DataTable = ({
           <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
             {data && data.length > 0 ? (
               data.map((item) => (
-                <tr key={item[keyField]} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-150">
+                <tr 
+                  key={item[keyField]} 
+                  className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-150 cursor-pointer"
+                  onClick={() => onRowClick && onRowClick(item)} // Tambahkan onClick handler
+                >
                   {/* Checkbox Cell */}
-                  <td className="px-4 py-4 whitespace-nowrap">
+                  <td 
+                    className="px-4 py-4 whitespace-nowrap"
+                    onClick={(e) => e.stopPropagation()} // Mencegah event bubbling ke row
+                  >
                     <Checkbox
                       checked={selectedItems.includes(item[keyField])}
                       onChange={() => onSelectItem(item[keyField])}
@@ -74,7 +82,10 @@ const DataTable = ({
                   ))}
                   
                   {/* Actions Cell - Sticky dengan dropdown */}
-                  <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium sticky right-0 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 z-5">
+                  <td 
+                    className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium sticky right-0 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 z-5"
+                    onClick={(e) => e.stopPropagation()} // Mencegah event bubbling ke row
+                  >
                     {rowActions(item)}
                   </td>
                 </tr>
