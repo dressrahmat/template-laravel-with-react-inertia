@@ -2,61 +2,89 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
+        // Ambil user yang sedang login
+        $authUser = auth()->user();
+
         // Ambil parameter dari request
         $search = $request->query('search');
         $sort = $request->query('sort', 'created_at');
         $direction = $request->query('direction', 'desc');
-        $perPage = $request->query('per_page', 5); // Tambahkan parameter per_page
-        
+        $perPage = $request->query('per_page', 5);
+
         // Validasi per_page
         $validPerPage = [5, 10, 15];
-        if (!in_array($perPage, $validPerPage)) {
+        if (! in_array($perPage, $validPerPage)) {
             $perPage = 5;
         }
-        
+
         // Validasi direction
-        if (!in_array($direction, ['asc', 'desc'])) {
+        if (! in_array($direction, ['asc', 'desc'])) {
             $direction = 'desc';
         }
-        
+
         // Validasi sort column
         $validSortColumns = ['name', 'email', 'created_at'];
-        if (!in_array($sort, $validSortColumns)) {
+        if (! in_array($sort, $validSortColumns)) {
             $sort = 'created_at';
         }
-        
+
         // Query users dengan pencarian dan pengurutan
-        $users = User::when($search, function ($query, $search) {
+        $users = User::with('roles')
+            ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->orderBy($sort, $direction)
-            ->paginate($perPage) // Gunakan perPage yang dipilih
-            ->withQueryString(); // Mempertahankan parameter query string
-        
+            ->paginate($perPage)
+            ->withQueryString();
+
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
-            'filters' => $request->only(['search', 'sort', 'direction', 'per_page']) // Tambahkan per_page ke filters
+            'filters' => $request->only(['search', 'sort', 'direction', 'per_page']),
+            'auth' => [
+                'user' => [
+                    'id' => $authUser->id,
+                    'name' => $authUser->name,
+                    'email' => $authUser->email,
+                    'roles' => $authUser->getRoleNames()->toArray(),
+                    'permissions' => $authUser->getAllPermissions()->pluck('name')->toArray(),
+                ],
+            ],
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/Users/Create');
+        $authUser = auth()->user();
+        $roles = Role::all()->pluck('name')->toArray(); // Tambahkan toArray()
+
+        return Inertia::render('Admin/Users/Create', [
+            'roles' => $roles,
+            'auth' => [
+                'user' => [
+                    'id' => $authUser->id,
+                    'name' => $authUser->name,
+                    'email' => $authUser->email,
+                    'roles' => $authUser->getRoleNames()->toArray(),
+                    'permissions' => $authUser->getAllPermissions()->pluck('name')->toArray(),
+                ],
+            ],
+        ]);
     }
 
     public function store(Request $request)
@@ -80,7 +108,12 @@ class UserController extends Controller
             $userData['foto_path'] = $path;
         }
 
-        User::create($userData);
+        $user = User::create($userData);
+
+        // Assign roles jika ada
+        if ($request->has('roles') && ! empty($request->roles)) {
+            $user->syncRoles($request->roles);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User created successfully.');
@@ -88,15 +121,46 @@ class UserController extends Controller
 
     public function show(User $user)
     {
+        $authUser = auth()->user();
+        $user->load('roles');
+
         return Inertia::render('Admin/Users/Show', [
-            'user' => $user
+            'user' => $user,
+            'auth' => [
+                'user' => [
+                    'id' => $authUser->id,
+                    'name' => $authUser->name,
+                    'email' => $authUser->email,
+                    'roles' => $authUser->getRoleNames()->toArray(),
+                    'permissions' => $authUser->getAllPermissions()->pluck('name')->toArray(),
+                ],
+            ],
         ]);
     }
 
     public function edit(User $user)
     {
+        $authUser = auth()->user();
+        $roles = Role::all()->pluck('name')->toArray(); // Tambahkan toArray()
+        $user->load('roles');
+
         return Inertia::render('Admin/Users/Edit', [
-            'user' => $user
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->getRoleNames()->toArray(), // Pastikan array
+            ],
+            'roles' => $roles,
+            'auth' => [
+                'user' => [
+                    'id' => $authUser->id,
+                    'name' => $authUser->name,
+                    'email' => $authUser->email,
+                    'roles' => $authUser->getRoleNames()->toArray(),
+                    'permissions' => $authUser->getAllPermissions()->pluck('name')->toArray(),
+                ],
+            ],
         ]);
     }
 
@@ -118,7 +182,14 @@ class UserController extends Controller
         }
 
         try {
+            // Simpan roles lama untuk audit
+            $oldRoles = $user->getRoleNames()->toArray();
+            
             $user->update($data);
+            // Sync roles
+            if ($request->has('roles')) {
+                $user->syncRoles($request->roles);
+            }
             
             return redirect()->route('admin.users.index')
                 ->with('success', 'User updated successfully.');
