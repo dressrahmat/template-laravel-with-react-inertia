@@ -9,7 +9,7 @@ export default function ShowUser({ user }) {
         <AdminLayout title="User Details">
             <Head title="User Details" />
 
-            <div className="mx-auto px-1 lg:px-4 lg:pt-4">
+            <div className="mx-auto px-3 py-1">
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
                     {/* Header dengan gradient */}
                     <div className="bg-gradient-to-r from-orange-600 to-orange-700 px-6 py-5 text-white">

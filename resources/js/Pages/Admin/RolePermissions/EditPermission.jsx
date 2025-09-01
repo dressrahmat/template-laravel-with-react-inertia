@@ -46,7 +46,7 @@ export default function EditPermission({ permission }) {
         <AdminLayout title="Edit Permission">
             <Head title="Edit Permission" />
 
-            <div className="mx-auto px-1 lg:px-4 lg:pt-4">
+            <div className="mx-auto px-3 py-1">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
                     {/* Header */}
                     <div className="mb-8">

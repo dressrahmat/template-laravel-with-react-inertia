@@ -327,7 +327,7 @@ export default function AdminLayout({ children, title }) {
                                     >
                                         <path
                                             fillRule="evenodd"
-                                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 極 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 極 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.極zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
                                             clipRule="evenodd"
                                         />
                                     </svg>
@@ -345,14 +345,9 @@ export default function AdminLayout({ children, title }) {
 
                             <div className="relative">
                                 <button
-                                    onClick={() => {
-                                        setNotificationsOpen(
-                                            !notificationsOpen
-                                        );
-                                        if (!notificationsOpen) {
-                                            loadNotifications();
-                                        }
-                                    }}
+                                    onClick={() =>
+                                        setNotificationsOpen(!notificationsOpen)
+                                    }
                                     className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 relative"
                                 >
                                     <svg
@@ -361,79 +356,33 @@ export default function AdminLayout({ children, title }) {
                                         viewBox="0 0 20 20"
                                         fill="currentColor"
                                     >
-                                        <path d="M10 2a6 6 0 00-6 6極3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                                     </svg>
-                                    {unreadCount > 0 && (
-                                        <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                                            {unreadCount > 9
-                                                ? "9+"
-                                                : unreadCount}
-                                        </span>
-                                    )}
+                                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                                 </button>
                                 <div
-                                    className={`absolute right-0 mt-2 w-80 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-600 ${
+                                    className={`absolute right-0 mt-2 w-64 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-600 ${
                                         notificationsOpen ? "" : "hidden"
                                     }`}
                                 >
-                                    <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-600">
-                                        <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-                                            Aktivitas Terbaru
-                                        </h3>
-                                    </div>
-                                    <div className="max-h-60 overflow-y-auto">
-                                        {loadingNotifications ? (
-                                            <div className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                                Memuat notifikasi...
-                                            </div>
-                                        ) : notifications.length === 0 ? (
-                                            <div className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                                Tidak ada aktivitas terbaru
-                                            </div>
-                                        ) : (
-                                            notifications.map(
-                                                (notification) => (
-                                                    <Link
-                                                        key={notification.id}
-                                                        href={route(
-                                                            "admin.audit-trail.show",
-                                                            notification.id
-                                                        )}
-                                                        className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 border-b border-gray-100 dark:border-gray-600"
-                                                    >
-                                                        <div className="flex justify-between items-start">
-                                                            <span className="font-medium">
-                                                                {notification
-                                                                    .user
-                                                                    ?.name ||
-                                                                    "System"}
-                                                            </span>
-                                                            <span className="text-xs text-gray-500">
-                                                                {
-                                                                    notification.created_at_human
-                                                                }
-                                                            </span>
-                                                        </div>
-                                                        <p className="mt-1">
-                                                            {
-                                                                notification.message
-                                                            }
-                                                        </p>
-                                                    </Link>
-                                                )
-                                            )
-                                        )}
-                                    </div>
-                                    <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-600">
-                                        <Link
-                                            href={route(
-                                                "admin.audit-trail.index"
-                                            )}
-                                            className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
-                                        >
-                                            Lihat semua aktivitas
-                                        </Link>
-                                    </div>
+                                    <a
+                                        href="#"
+                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                    >
+                                        New message
+                                    </a>
+                                    <a
+                                        href="#"
+                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                    >
+                                        System update
+                                    </a>
+                                    <a
+                                        href="#"
+                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                    >
+                                        New user registered
+                                    </a>
                                 </div>
                             </div>
 
@@ -447,18 +396,9 @@ export default function AdminLayout({ children, title }) {
                                             .slice(0, 2)
                                             .toUpperCase()}
                                     </div>
-                                    <div className="hidden md:flex flex-col items-start">
-                                        <span className="font-medium">
-                                            {auth.user.name}
-                                        </span>
-                                        {/* Display user roles */}
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                                            {auth.user.roles &&
-                                            auth.user.roles.length > 0
-                                                ? auth.user.roles.join(", ")
-                                                : "No roles"}
-                                        </span>
-                                    </div>
+                                    <span className="hidden md:inline font-medium">
+                                        {auth.user.name}
+                                    </span>
                                 </button>
                                 <div
                                     className={`absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-600 ${

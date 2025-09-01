@@ -1,18 +1,41 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import { Link } from '@inertiajs/react';
+import ApplicationLogo from "@/Components/ApplicationLogo";
+import { Link } from "@inertiajs/react";
+import { motion } from "framer-motion";
 
 export default function GuestLayout({ children }) {
     return (
-        <div className="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0">
-            <div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center p-4">
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="mb-8"
+            >
                 <Link href="/">
-                    <ApplicationLogo className="h-20 w-20 fill-current text-gray-500" />
+                    <ApplicationLogo className="h-24 w-24 fill-current text-indigo-600" />
                 </Link>
-            </div>
+            </motion.div>
 
-            <div className="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg">
-                {children}
-            </div>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden"
+            >
+                <div className="px-8 py-10">{children}</div>
+            </motion.div>
+
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="mt-8 text-center text-sm text-gray-600"
+            >
+                <p>
+                    © {new Date().getFullYear()} Your Company Name. All rights
+                    reserved.
+                </p>
+            </motion.div>
         </div>
     );
 }
