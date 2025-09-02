@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\Admin\RolePermissionController;
 
 Route::get('/', function () {
@@ -40,6 +41,8 @@ Route::middleware('auth')->group(function () {
             Route::post('/users/bulk-destroy', [UserController::class, 'bulkDestroy'])->name('users.bulk-destroy');
             Route::post('/users/export', [UserController::class, 'export'])->name('users.export');
             Route::put('/users/bulk-update', [UserController::class, 'bulkUpdate'])->name('users.bulk-update');
+            // Upload foto
+            Route::post('/users/{user}/update-foto', [UserController::class, 'updatePhoto'])->name('users.update-photo');
         });
 
         // Roles - hanya untuk yang memiliki permission manage roles

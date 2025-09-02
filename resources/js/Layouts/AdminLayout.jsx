@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Head, Link, usePage } from "@inertiajs/react";
 
 export default function AdminLayout({ children, title }) {
-    const { auth, url } = usePage().props;
+    const { auth } = usePage().props;
     const [isDark, setIsDark] = useState(
         localStorage.getItem("darkMode") === "true" ||
             (!localStorage.getItem("darkMode") &&
@@ -44,7 +44,7 @@ export default function AdminLayout({ children, title }) {
         return () => clearInterval(interval);
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (isDark) {
             document.documentElement.classList.add("dark");
             localStorage.setItem("darkMode", "true");
@@ -54,7 +54,7 @@ export default function AdminLayout({ children, title }) {
         }
     }, [isDark]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth >= 768) {
                 setSidebarOpen(true);
@@ -121,7 +121,6 @@ export default function AdminLayout({ children, title }) {
                 } ${sidebarExpanded ? "w-64" : "w-20"} md:translate-x-0`}
             >
                 <div className="p-4 flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700">
-                    {/* Logo yang berubah sesuai state sidebar */}
                     <div className="flex items-center">
                         {sidebarExpanded ? (
                             <h1 className="text-xl font-bold text-primary-500 dark:text-primary-400">
@@ -182,7 +181,6 @@ export default function AdminLayout({ children, title }) {
 
                 <nav className="p-4">
                     <ul className="space-y-2">
-                        {/* Dashboard - Visible to all authenticated users */}
                         {(hasPermission("view dashboard") ||
                             hasAnyRole(["admin", "superadmin"])) && (
                             <li>
@@ -200,7 +198,7 @@ export default function AdminLayout({ children, title }) {
                                         viewBox="0 0 20 20"
                                         fill="currentColor"
                                     >
-                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001 1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                                     </svg>
                                     <span
                                         className={`ml-3 ${
@@ -213,7 +211,6 @@ export default function AdminLayout({ children, title }) {
                             </li>
                         )}
 
-                        {/* Users - Only for users with manage users permission */}
                         {hasPermission("manage users") && (
                             <li>
                                 <Link
@@ -243,7 +240,6 @@ export default function AdminLayout({ children, title }) {
                             </li>
                         )}
 
-                        {/* Menu Roles & Permissions - Only for users with manage roles permission */}
                         {hasPermission("manage roles") && (
                             <li>
                                 <Link
@@ -345,9 +341,14 @@ export default function AdminLayout({ children, title }) {
 
                             <div className="relative">
                                 <button
-                                    onClick={() =>
-                                        setNotificationsOpen(!notificationsOpen)
-                                    }
+                                    onClick={() => {
+                                        setNotificationsOpen(
+                                            !notificationsOpen
+                                        );
+                                        if (!notificationsOpen) {
+                                            loadNotifications();
+                                        }
+                                    }}
                                     className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 relative"
                                 >
                                     <svg
@@ -362,32 +363,129 @@ export default function AdminLayout({ children, title }) {
                                         <span className="absolute top-0 right-0 w-2 h-2 bg-error-500 rounded-full"></span>
                                     )}
                                 </button>
+
+                                {/* Notifications Panel */}
                                 <div
-                                    className={`absolute right-0 mt-2 w-64 bg-neutral-50 dark:bg-neutral-700 rounded-xl shadow-card py-1 z-50 border border-neutral-200 dark:border-neutral-600 ${
-                                        notificationsOpen ? "" : "hidden"
+                                    className={`absolute right-0 mt-2 w-80 bg-white dark:bg-neutral-800 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 z-50 ${
+                                        notificationsOpen ? "block" : "hidden"
                                     }`}
                                 >
-                                    {loadingNotifications ? (
-                                        <div className="px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300">
-                                            Loading...
+                                    <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">
+                                                Notifikasi
+                                            </h3>
+                                            {unreadCount > 0 && (
+                                                <span className="text-xs bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 px-2 py-1 rounded-full">
+                                                    {unreadCount} baru
+                                                </span>
+                                            )}
                                         </div>
-                                    ) : notifications.length > 0 ? (
-                                        notifications.map(
-                                            (notification, index) => (
-                                                <a
-                                                    key={index}
-                                                    href="#"
-                                                    className="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"
+                                    </div>
+
+                                    <div className="max-h-96 overflow-y-auto">
+                                        {loadingNotifications ? (
+                                            <div className="px-4 py-4 text-center">
+                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600 mx-auto"></div>
+                                                <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2">
+                                                    Memuat notifikasi...
+                                                </p>
+                                            </div>
+                                        ) : notifications.length === 0 ? (
+                                            <div className="px-4 py-6 text-center">
+                                                <svg
+                                                    className="w-12 h-12 text-neutral-400 mx-auto mb-3"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
                                                 >
-                                                    {notification.message}
-                                                </a>
-                                            )
-                                        )
-                                    ) : (
-                                        <div className="px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300">
-                                            No notifications
-                                        </div>
-                                    )}
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                                                    />
+                                                </svg>
+                                                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                                                    Belum ada notifikasi
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
+                                                {notifications.map(
+                                                    (notification) => (
+                                                        <Link
+                                                            key={
+                                                                notification.id
+                                                            }
+                                                            href={route(
+                                                                "admin.audit-trail.show",
+                                                                notification.id
+                                                            )}
+                                                            className="block px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-150"
+                                                            onClick={() =>
+                                                                setNotificationsOpen(
+                                                                    false
+                                                                )
+                                                            }
+                                                        >
+                                                            <div className="flex items-start space-x-3">
+                                                                <div
+                                                                    className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 bg-${notification.event_color}-500`}
+                                                                ></div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                                                                        {notification.user
+                                                                            ? notification
+                                                                                  .user
+                                                                                  .name
+                                                                            : "Sistem"}
+                                                                    </p>
+                                                                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                                                                        {
+                                                                            notification.message
+                                                                        }
+                                                                    </p>
+                                                                    <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
+                                                                        {
+                                                                            notification.created_at_human
+                                                                        }
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    )
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="px-4 py-3 border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700 rounded-b-xl">
+                                        <Link
+                                            href={route(
+                                                "admin.audit-trail.index"
+                                            )}
+                                            className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium flex items-center justify-center"
+                                            onClick={() =>
+                                                setNotificationsOpen(false)
+                                            }
+                                        >
+                                            Lihat semua notifikasi
+                                            <svg
+                                                className="w-4 h-4 ml-1"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M9 5l7 7-7 7"
+                                                />
+                                            </svg>
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
 
@@ -414,13 +512,13 @@ export default function AdminLayout({ children, title }) {
                                         href="#"
                                         className="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"
                                     >
-                                        Your Profile
+                                        Profil Anda
                                     </a>
                                     <a
                                         href="#"
                                         className="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"
                                     >
-                                        Settings
+                                        Pengaturan
                                     </a>
                                     <Link
                                         href={route("logout")}
@@ -428,7 +526,7 @@ export default function AdminLayout({ children, title }) {
                                         as="button"
                                         className="block w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"
                                     >
-                                        Log Out
+                                        Keluar
                                     </Link>
                                 </div>
                             </div>

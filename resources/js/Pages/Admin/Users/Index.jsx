@@ -670,10 +670,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                             selectedCount={selectedUsers.length}
                             onBulkDelete={openBulkDeleteModal}
                             onBulkExport={handleExport}
-                            onClearSelection={() => {
-                                clearSelectedUsers();
-                                setSelectAll(false);
-                            }}
+                            onClearSelected={clearSelectedUsers}
                         />
                     </div>
                 )}

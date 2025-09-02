@@ -83,7 +83,7 @@ const FilterSection = ({
                             onChange={(e) =>
                                 onPerPageChange(Number(e.target.value))
                             }
-                            className="block w-full sm:w-20 pl-3 pr-8 py-2 text-base border border-neutral-300 dark:border-neutral-600 rounded-md leading-5 bg-neutral-50 dark:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                            className="block w-full sm:w-20 pl-3 pr-8 py-2 text-base border border-neutral-300 dark:border-neutral-600 rounded-md leading-5 bg-neutral-50 dark:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                         >
                             <option value={5}>5</option>
                             <option value={10}>10</option>
