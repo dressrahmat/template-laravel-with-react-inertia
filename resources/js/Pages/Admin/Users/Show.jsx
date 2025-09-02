@@ -72,10 +72,10 @@ export default function ShowUser({ user }) {
                 cancelText="Cancel"
             />
 
-            <div className="mx-auto px-1 lg:px-4 lg:pt-4">
+            <div className="mx-auto px-1 lg:px-4 lg:pt-2">
                 <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl shadow-card overflow-hidden">
                     {/* Header dengan gradient dan tombol action */}
-                    <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 text-white flex justify-between items-center">
+                    <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 text-white flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
                         <div>
                             <h2 className="text-2xl font-bold">User Details</h2>
                             <p className="text-primary-100 opacity-90 mt-1">
@@ -84,12 +84,12 @@ export default function ShowUser({ user }) {
                             </p>
                         </div>
 
-                        {/* Tombol Action di Kanan Atas */}
-                        <div className="flex items-center space-x-3">
-                            {/* Tombol Back to List - hanya tampil di desktop */}
+                        {/* Tombol Action di Kanan Atas (Desktop Only) */}
+                        <div className="hidden md:flex items-center space-x-3">
+                            {/* Tombol Back to List */}
                             <Link
                                 href={route("admin.users.index")}
-                                className="hidden md:inline-flex items-center justify-center px-4 py-2 bg-neutral-50/20 hover:bg-neutral-50/30 border border-neutral-50/30 rounded-lg text-white shadow-sm transition-all duration-200"
+                                className="inline-flex items-center justify-center px-4 py-2 bg-neutral-50/20 hover:bg-neutral-50/30 border border-neutral-50/30 rounded-lg text-white shadow-sm transition-all duration-200"
                             >
                                 <svg
                                     className="w-4 h-4 mr-2"
@@ -108,31 +108,9 @@ export default function ShowUser({ user }) {
                                 Back
                             </Link>
 
-                            {/* Tombol Delete User */}
-                            <DangerButton
-                                onClick={openDeleteModal}
-                                className="flex items-center px-4 py-2 bg-error-600 hover:bg-error-700 focus:ring-primary-500"
-                            >
-                                <svg
-                                    className="w-4 h-4 mr-2"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                    />
-                                </svg>
-                                Delete
-                            </DangerButton>
-
                             {/* Tombol Edit User */}
                             <Link href={route("admin.users.edit", user.id)}>
-                                <PrimaryButton className="flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
+                                <PrimaryButton className="flex items-center px-4 py-2">
                                     <svg
                                         className="w-4 h-4 mr-2"
                                         fill="none"
@@ -150,10 +128,32 @@ export default function ShowUser({ user }) {
                                     Edit
                                 </PrimaryButton>
                             </Link>
+
+                            {/* Tombol Delete User */}
+                            <DangerButton
+                                onClick={openDeleteModal}
+                                className="flex items-center px-4 py-2"
+                            >
+                                <svg
+                                    className="w-4 h-4 mr-2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                    />
+                                </svg>
+                                Delete
+                            </DangerButton>
                         </div>
                     </div>
 
-                    <div className="p-6 md:p-8">
+                    <div className="p-4 md:p-8">
                         <div className="flex flex-col md:flex-row gap-6 mb-8">
                             {/* Foto Profil - Sesuai dengan struktur Edit */}
                             <div className="flex-shrink-0">
@@ -200,7 +200,7 @@ export default function ShowUser({ user }) {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Card untuk informasi user */}
-                            <div className="bg-neutral-50 dark:bg-neutral-700/50 p-5 rounded-xl">
+                            <div className="bg-neutral-50 dark:bg-neutral-700/50 p-3 rounded-xl">
                                 <h3 className="font-semibold text-lg text-neutral-900 dark:text-white mb-5 border-b border-neutral-200 dark:border-neutral-600 pb-3">
                                     Personal Information
                                 </h3>
@@ -238,7 +238,7 @@ export default function ShowUser({ user }) {
                             </div>
 
                             {/* Card untuk metadata user */}
-                            <div className="bg-neutral-50 dark:bg-neutral-700/50 p-5 rounded-xl">
+                            <div className="bg-neutral-50 dark:bg-neutral-700/50 p-3 rounded-xl">
                                 <h3 className="font-semibold text-lg text-neutral-900 dark:text-white mb-5 border-b border-neutral-200 dark:border-neutral-600 pb-3">
                                     Account Information
                                 </h3>
@@ -308,7 +308,7 @@ export default function ShowUser({ user }) {
 
                             {/* Card untuk roles */}
                             {user.roles && user.roles.length > 0 && (
-                                <div className="bg-neutral-50 dark:bg-neutral-700/50 p-5 rounded-xl md:col-span-2">
+                                <div className="bg-neutral-50 dark:bg-neutral-700/50 p-3 rounded-xl md:col-span-2">
                                     <h3 className="font-semibold text-lg text-neutral-900 dark:text-white mb-5 border-b border-neutral-200 dark:border-neutral-600 pb-3">
                                         User Roles
                                     </h3>
@@ -326,8 +326,50 @@ export default function ShowUser({ user }) {
                             )}
                         </div>
 
-                        {/* Tombol Back to List untuk mobile - di bagian bawah */}
-                        <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700 md:hidden">
+                        {/* Tombol Back to List, Edit, dan Delete untuk mobile - di bagian bawah */}
+                        <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700 flex flex-col space-y-3 md:hidden">
+                            <Link
+                                href={route("admin.users.edit", user.id)}
+                                className="inline-flex items-center justify-center w-full px-6 py-3 bg-primary-600 hover:bg-primary-700 rounded-xl text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200"
+                            >
+                                <svg
+                                    className="w-5 h-5 mr-2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                    />
+                                </svg>
+                                Edit User
+                            </Link>
+
+                            <DangerButton
+                                onClick={openDeleteModal}
+                                className="inline-flex items-center justify-center w-full px-6 py-3"
+                            >
+                                <svg
+                                    className="w-5 h-5 mr-2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                    />
+                                </svg>
+                                Delete User
+                            </DangerButton>
+
                             <Link
                                 href={route("admin.users.index")}
                                 className="inline-flex items-center justify-center w-full px-6 py-3 bg-neutral-50 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xl text-neutral-700 dark:text-neutral-300 shadow-sm hover:bg-neutral-100 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200"

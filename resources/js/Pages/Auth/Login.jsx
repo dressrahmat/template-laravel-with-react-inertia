@@ -57,13 +57,13 @@ export default function Login({ status, canResetPassword }) {
                 <div className="text-center mb-6">
                     <motion.h2
                         variants={itemVariants}
-                        className="text-3xl font-bold text-gray-900"
+                        className="text-3xl font-bold text-neutral-900 dark:text-neutral-100"
                     >
                         Welcome Back
                     </motion.h2>
                     <motion.p
                         variants={itemVariants}
-                        className="mt-2 text-sm text-gray-600"
+                        className="mt-2 text-sm text-neutral-600 dark:text-neutral-400"
                     >
                         Sign in to your account to continue
                     </motion.p>
@@ -72,7 +72,7 @@ export default function Login({ status, canResetPassword }) {
                 {status && (
                     <motion.div
                         variants={itemVariants}
-                        className="mb-4 p-3 bg-green-50 text-green-700 rounded-lg text-sm"
+                        className="mb-4 p-3 bg-success-50 dark:bg-success-900/30 text-success-700 dark:text-success-300 rounded-xl text-sm"
                     >
                         {status}
                     </motion.div>
@@ -84,14 +84,14 @@ export default function Login({ status, canResetPassword }) {
                             <InputLabel
                                 htmlFor="email"
                                 value="Email Address"
-                                className="mb-1.5"
+                                className="mb-1.5 text-neutral-700 dark:text-neutral-300"
                             />
                             <TextInput
                                 id="email"
                                 type="email"
                                 name="email"
                                 value={data.email}
-                                className="block w-full rounded-lg py-2.5 px-3.5 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                                className="block w-full rounded-xl py-2.5 px-3.5 border-neutral-300 dark:border-neutral-600 focus:border-primary-500 focus:ring-primary-500 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
                                 autoComplete="username"
                                 isFocused={true}
                                 onChange={(e) =>
@@ -108,14 +108,14 @@ export default function Login({ status, canResetPassword }) {
                             <InputLabel
                                 htmlFor="password"
                                 value="Password"
-                                className="mb-1.5"
+                                className="mb-1.5 text-neutral-700 dark:text-neutral-300"
                             />
                             <TextInput
                                 id="password"
                                 type="password"
                                 name="password"
                                 value={data.password}
-                                className="block w-full rounded-lg py-2.5 px-3.5 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                                className="block w-full rounded-xl py-2.5 px-3.5 border-neutral-300 dark:border-neutral-600 focus:border-primary-500 focus:ring-primary-500 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
                                 autoComplete="current-password"
                                 onChange={(e) =>
                                     setData("password", e.target.value)
@@ -136,7 +136,7 @@ export default function Login({ status, canResetPassword }) {
                                         setData("remember", e.target.checked)
                                     }
                                 />
-                                <span className="ms-2 text-sm text-gray-600">
+                                <span className="ms-2 text-sm text-neutral-600 dark:text-neutral-400">
                                     Remember me
                                 </span>
                             </label>
@@ -144,7 +144,7 @@ export default function Login({ status, canResetPassword }) {
                             {canResetPassword && (
                                 <Link
                                     href={route("password.request")}
-                                    className="text-sm text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+                                    className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 transition-colors duration-200"
                                 >
                                     Forgot password?
                                 </Link>
@@ -156,7 +156,7 @@ export default function Login({ status, canResetPassword }) {
                             whileTap={{ scale: 0.99 }}
                         >
                             <PrimaryButton
-                                className="w-full justify-center py-3 px-4 text-base font-medium rounded-lg shadow-sm"
+                                className="w-full justify-center py-3 px-4 text-base font-medium rounded-xl shadow-card bg-primary-600 hover:bg-primary-700 focus:ring-primary-500"
                                 disabled={processing}
                             >
                                 {processing ? "Signing in..." : "Sign in"}
@@ -167,13 +167,13 @@ export default function Login({ status, canResetPassword }) {
 
                 <motion.div
                     variants={itemVariants}
-                    className="text-center pt-4 border-t border-gray-100 mt-6"
+                    className="text-center pt-4 border-t border-neutral-100 dark:border-neutral-700 mt-6"
                 >
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         Don't have an account?{" "}
                         <Link
                             href={route("register")}
-                            className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+                            className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 transition-colors duration-200"
                         >
                             Sign up
                         </Link>

@@ -32,13 +32,6 @@ class RolePermissionSeeder extends Seeder
             'edit permissions',
             'delete permissions',
 
-            'view audit trail',
-            'view audit trail users',
-            'view audit trail anggota',
-            'view audit trail koordinator',
-            'view audit trail pengurus',
-            'view audit trail roles',
-            'view audit trail permissions',
         ];
 
         foreach ($permissions as $permission) {

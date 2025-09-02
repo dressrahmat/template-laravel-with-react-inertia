@@ -1,0 +1,1 @@
+import{j as e}from"./app-C-l_7ese.js";function t({className:r="",...o}){return e.jsx("input",{...o,type:"checkbox",className:"rounded border-neutral-300 text-primary-500 shadow-sm focus:ring-primary-500 focus:border-primary-500 "+r})}export{t as C};

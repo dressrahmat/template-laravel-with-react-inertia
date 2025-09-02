@@ -53,7 +53,6 @@ export default function CreateRole() {
 
         setSelectedPermissions((prev) => {
             const newSelected = { ...prev };
-
             groupPermissions.forEach((permission) => {
                 if (allSelected) {
                     delete newSelected[permission.name];
@@ -61,7 +60,6 @@ export default function CreateRole() {
                     newSelected[permission.name] = true;
                 }
             });
-
             return newSelected;
         });
 
@@ -83,22 +81,18 @@ export default function CreateRole() {
     return (
         <AdminLayout title="Create Role">
             <Head title="Create Role" />
-
-            <div className="mx-auto px-3 py-1">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
-                    {/* Header */}
+            <div className="mx-auto px-1 lg:px-4 lg:pt-2">
+                <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl shadow-card p-6 sm:p-8">
                     <div className="mb-8">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
                             Create New Role
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2">
+                        <p className="text-neutral-600 dark:text-neutral-400 mt-2">
                             Add a new role with specific permissions for your
                             system.
                         </p>
                     </div>
-
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Name Field */}
                         <div>
                             <InputLabel
                                 htmlFor="name"
@@ -115,29 +109,25 @@ export default function CreateRole() {
                                     }
                                     error={errors.name}
                                     placeholder="Enter role name"
-                                    icon={FiShield}
                                     className="pl-10"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiShield className="h-5 w-5 text-orange-400" />
+                                    <FiShield className="h-5 w-5 text-primary-400" />
                                 </div>
                             </div>
                             <InputError message={errors.name} />
                         </div>
-
-                        {/* Permissions Section */}
                         <div>
                             <InputLabel value="Permissions" className="mb-4" />
-
                             <div className="space-y-6">
                                 {Object.entries(permissions).map(
                                     ([groupName, groupPermissions]) => (
                                         <div
                                             key={groupName}
-                                            className="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+                                            className="border border-neutral-200 dark:border-neutral-700 rounded-xl p-4"
                                         >
                                             <div className="flex items-center justify-between mb-3">
-                                                <h3 className="font-medium text-gray-900 dark:text-white capitalize">
+                                                <h3 className="font-medium text-neutral-900 dark:text-white capitalize">
                                                     {groupName} Permissions
                                                 </h3>
                                                 <button
@@ -147,18 +137,17 @@ export default function CreateRole() {
                                                             groupName
                                                         )
                                                     }
-                                                    className="text-sm text-orange-600 dark:text-orange-400 hover:underline"
+                                                    className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
                                                 >
                                                     Select All
                                                 </button>
                                             </div>
-
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                                                 {groupPermissions.map(
                                                     (permission) => (
                                                         <label
                                                             key={permission.id}
-                                                            className="flex items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                                                            className="flex items-center p-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
                                                         >
                                                             <input
                                                                 type="checkbox"
@@ -178,11 +167,11 @@ export default function CreateRole() {
                                                             {selectedPermissions[
                                                                 permission.name
                                                             ] ? (
-                                                                <FiCheckSquare className="h-5 w-5 text-orange-600 dark:text-orange-400 mr-2" />
+                                                                <FiCheckSquare className="h-5 w-5 text-primary-600 dark:text-primary-400 mr-2" />
                                                             ) : (
-                                                                <FiSquare className="h-5 w-5 text-gray-400 mr-2" />
+                                                                <FiSquare className="h-5 w-5 text-neutral-400 mr-2" />
                                                             )}
-                                                            <span className="text-sm text-gray-700 dark:text-gray-300">
+                                                            <span className="text-sm text-neutral-700 dark:text-neutral-300">
                                                                 {
                                                                     permission.name
                                                                 }
@@ -197,21 +186,19 @@ export default function CreateRole() {
                             </div>
                             <InputError message={errors.permissions} />
                         </div>
-
-                        {/* Form Actions */}
-                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-neutral-200 dark:border-neutral-700">
                             <Link
                                 href={route("admin.role-permissions.index", {
                                     type: "roles",
                                 })}
-                                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors duration-200 font-medium"
+                                className="inline-flex items-center justify-center px-6 py-3 border border-neutral-300 rounded-xl text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors duration-200 font-medium"
                             >
                                 Cancel
                             </Link>
                             <PrimaryButton
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-3 bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
+                                className="px-6 py-3 bg-primary-600 hover:bg-primary-700 focus:ring-primary-500"
                             >
                                 {processing ? (
                                     <>

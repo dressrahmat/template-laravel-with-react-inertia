@@ -34,7 +34,6 @@ import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { createPortal } from "react-dom";
 
-// Komponen Dropdown dengan Portal untuk merender di luar hierarchy tabel
 const PortalDropdown = ({ trigger, children, position = "bottom-right" }) => {
     const [positionData, setPositionData] = useState({
         top: 0,
@@ -77,7 +76,6 @@ const PortalDropdown = ({ trigger, children, position = "bottom-right" }) => {
             >
                 {trigger}
             </div>
-
             {isOpen &&
                 createPortal(
                     <div
@@ -85,7 +83,7 @@ const PortalDropdown = ({ trigger, children, position = "bottom-right" }) => {
                         onClick={() => setIsOpen(false)}
                     >
                         <div
-                            className={`absolute mt-1 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-orange-500 ring-opacity-20 focus:outline-none ${getPositionClass()}`}
+                            className={`absolute mt-1 w-48 rounded-xl shadow-card bg-neutral-50 dark:bg-neutral-800 ring-1 ring-primary-500 ring-opacity-20 focus:outline-none ${getPositionClass()}`}
                             style={{
                                 top: positionData.top,
                                 left:
@@ -111,10 +109,9 @@ const PortalDropdown = ({ trigger, children, position = "bottom-right" }) => {
     );
 };
 
-// Komponen Dropdown Actions untuk setiap baris
-const RowActionsDropdown = ({ item, type, onView, onEdit, onDelete }) => {
+const RowActionsDropdown = ({ item, type, onEdit, onDelete }) => {
     const trigger = (
-        <button className="inline-flex justify-center w-full p-2 text-sm font-medium text-orange-600 dark:text-orange-400 bg-white dark:bg-gray-800 rounded-md hover:bg-orange-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+        <button className="inline-flex justify-center w-full p-2 text-sm font-medium text-primary-600 dark:text-primary-400 bg-neutral-50 dark:bg-neutral-800 rounded-md hover:bg-primary-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <FiMoreVertical className="h-4 w-4" aria-hidden="true" />
         </button>
     );
@@ -124,14 +121,14 @@ const RowActionsDropdown = ({ item, type, onView, onEdit, onDelete }) => {
             <div className="py-1">
                 <button
                     onClick={onEdit}
-                    className="group flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700 hover:text-orange-600 dark:hover:text-orange-400"
+                    className="group flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400"
                 >
                     <FiEdit className="mr-3 h-4 w-4" aria-hidden="true" />
                     Edit
                 </button>
                 <button
                     onClick={onDelete}
-                    className="group flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-700 dark:hover:text-red-300"
+                    className="group flex items-center w-full px-4 py-2 text-sm text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/30 hover:text-error-700 dark:hover:text-error-300"
                 >
                     <FiTrash2 className="mr-3 h-4 w-4" aria-hidden="true" />
                     Delete
@@ -141,7 +138,6 @@ const RowActionsDropdown = ({ item, type, onView, onEdit, onDelete }) => {
     );
 };
 
-// Custom hook untuk menyimpan selected items di sessionStorage
 const usePersistedSelectedItems = (
     initialValue = [],
     storageKey = "selectedItems"
@@ -248,7 +244,6 @@ export default function RolePermissionsIndex({
     }, [searchTerm, perPage, sortConfig, type]);
 
     useEffect(() => {
-        // Clear selected items ketika tab berubah
         clearSelectedItems();
         setSelectAll(false);
     }, [type, clearSelectedItems]);
@@ -256,14 +251,10 @@ export default function RolePermissionsIndex({
     const handleSelectAll = useCallback(() => {
         if (data && data.data) {
             const currentPageIds = data.data.map((item) => item.id);
-
             if (!selectAll) {
-                setSelectedItems((prev) => {
-                    const newSelected = [
-                        ...new Set([...prev, ...currentPageIds]),
-                    ];
-                    return newSelected;
-                });
+                setSelectedItems((prev) => [
+                    ...new Set([...prev, ...currentPageIds]),
+                ]);
             } else {
                 setSelectedItems((prev) =>
                     prev.filter((id) => !currentPageIds.includes(id))
@@ -286,37 +277,19 @@ export default function RolePermissionsIndex({
     );
 
     const openDeleteModal = useCallback((id, name, itemType) => {
-        setDeleteModal({
-            isOpen: true,
-            id,
-            name,
-            type: itemType,
-        });
+        setDeleteModal({ isOpen: true, id, name, type: itemType });
     }, []);
 
     const openBulkDeleteModal = useCallback(() => {
-        setBulkDeleteModal({
-            isOpen: true,
-            count: selectedItems.length,
-            type: type,
-        });
+        setBulkDeleteModal({ isOpen: true, count: selectedItems.length, type });
     }, [selectedItems.length, type]);
 
     const closeDeleteModal = useCallback(() => {
-        setDeleteModal({
-            isOpen: false,
-            id: null,
-            name: "",
-            type: "",
-        });
+        setDeleteModal({ isOpen: false, id: null, name: "", type: "" });
     }, []);
 
     const closeBulkDeleteModal = useCallback(() => {
-        setBulkDeleteModal({
-            isOpen: false,
-            count: 0,
-            type: "",
-        });
+        setBulkDeleteModal({ isOpen: false, count: 0, type: "" });
     }, []);
 
     const handleDelete = useCallback(() => {
@@ -325,7 +298,6 @@ export default function RolePermissionsIndex({
                 deleteModal.type === "roles"
                     ? "admin.roles.destroy"
                     : "admin.permissions.destroy";
-
             router.delete(route(routeName, deleteModal.id), {
                 onSuccess: () => {
                     success(
@@ -365,12 +337,9 @@ export default function RolePermissionsIndex({
                 type === "roles"
                     ? "admin.roles.bulk-destroy"
                     : "admin.permissions.bulk-destroy";
-
             router.post(
                 route(routeName),
-                {
-                    ids: selectedItems,
-                },
+                { ids: selectedItems },
                 {
                     onSuccess: () => {
                         success(
@@ -418,13 +387,7 @@ export default function RolePermissionsIndex({
         setSortConfig({ key: "name", direction: "asc" });
         router.get(
             route("admin.role-permissions.index"),
-            {
-                type: type,
-                search: "",
-                per_page: 10,
-                sort: "name",
-                direction: "asc",
-            },
+            { type, search: "", per_page: 10, sort: "name", direction: "asc" },
             {
                 preserveState: true,
                 preserveScroll: true,
@@ -459,11 +422,9 @@ export default function RolePermissionsIndex({
     );
 
     const handleTypeChange = useCallback((newType) => {
-        // Clear filters dan selected items sebelum pindah tab
         setSearchTerm("");
         setPerPage(10);
         setSortConfig({ key: "name", direction: "asc" });
-
         router.get(
             route("admin.role-permissions.index"),
             {
@@ -488,7 +449,6 @@ export default function RolePermissionsIndex({
         );
     }, []);
 
-    // Columns untuk Roles
     const roleColumns = useMemo(
         () => [
             {
@@ -500,15 +460,15 @@ export default function RolePermissionsIndex({
                 render: (role) => (
                     <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                            <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-                                <FiShield className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                            <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                                <FiShield className="h-5 w-5 text-primary-600 dark:text-primary-400" />
                             </div>
                         </div>
                         <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            <div className="text-sm font-medium text-neutral-900 dark:text-white">
                                 {role.name}
                             </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                            <div className="text-sm text-neutral-500 dark:text-neutral-400">
                                 {role.users_count} user(s)
                             </div>
                         </div>
@@ -521,17 +481,16 @@ export default function RolePermissionsIndex({
                 sortable: false,
                 render: (role) => (
                     <div className="flex flex-wrap gap-1">
-                        {role.permissions &&
-                            role.permissions.slice(0, 3).map((permission) => (
-                                <span
-                                    key={permission.id}
-                                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-                                >
-                                    {permission.name}
-                                </span>
-                            ))}
+                        {role.permissions?.slice(0, 3).map((permission) => (
+                            <span
+                                key={permission.id}
+                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-accent-100 dark:bg-accent-900/30 text-accent-800 dark:text-accent-300"
+                            >
+                                {permission.name}
+                            </span>
+                        ))}
                         {role.permissions && role.permissions.length > 3 && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-300">
                                 +{role.permissions.length - 3} more
                             </span>
                         )}
@@ -545,7 +504,7 @@ export default function RolePermissionsIndex({
                 onSort: () => handleSort("created_at"),
                 sortIcon: getSortIcon("created_at"),
                 render: (role) => (
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         {new Date(role.created_at).toLocaleDateString("id-ID", {
                             year: "numeric",
                             month: "short",
@@ -558,7 +517,6 @@ export default function RolePermissionsIndex({
         [handleSort, getSortIcon]
     );
 
-    // Columns untuk Permissions
     const permissionColumns = useMemo(
         () => [
             {
@@ -570,16 +528,16 @@ export default function RolePermissionsIndex({
                 render: (permission) => (
                     <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                            <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                                <FiKey className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                            <div className="h-10 w-10 rounded-full bg-accent-100 dark:bg-accent-900/30 flex items-center justify-center">
+                                <FiKey className="h-5 w-5 text-accent-600 dark:text-accent-400" />
                             </div>
                         </div>
                         <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            <div className="text-sm font-medium text-neutral-900 dark:text-white">
                                 {permission.name}
                             </div>
                             {permission.description && (
-                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                <div className="text-sm text-neutral-500 dark:text-neutral-400">
                                     {permission.description}
                                 </div>
                             )}
@@ -593,17 +551,16 @@ export default function RolePermissionsIndex({
                 sortable: false,
                 render: (permission) => (
                     <div className="flex flex-wrap gap-1">
-                        {permission.roles &&
-                            permission.roles.slice(0, 3).map((role) => (
-                                <span
-                                    key={role.id}
-                                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                                >
-                                    {role.name}
-                                </span>
-                            ))}
+                        {permission.roles?.slice(0, 3).map((role) => (
+                            <span
+                                key={role.id}
+                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success-100 dark:bg-success-900/30 text-success-800 dark:text-success-300"
+                            >
+                                {role.name}
+                            </span>
+                        ))}
                         {permission.roles && permission.roles.length > 3 && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-300">
                                 +{permission.roles.length - 3} more
                             </span>
                         )}
@@ -617,7 +574,7 @@ export default function RolePermissionsIndex({
                 onSort: () => handleSort("created_at"),
                 sortIcon: getSortIcon("created_at"),
                 render: (permission) => (
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         {new Date(permission.created_at).toLocaleDateString(
                             "id-ID",
                             {
@@ -637,7 +594,7 @@ export default function RolePermissionsIndex({
 
     const emptyState = useMemo(
         () => (
-            <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
+            <div className="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500">
                 {type === "roles" ? (
                     <>
                         <FiShield className="h-12 w-12 mb-3 opacity-50" />
@@ -647,7 +604,7 @@ export default function RolePermissionsIndex({
                         </p>
                         <div className="mt-6">
                             <Link href={route("admin.roles.create")}>
-                                <PrimaryButton className="flex items-center bg-orange-600 hover:bg-orange-700 focus:ring-orange-500">
+                                <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
                                     <FiPlus className="mr-2 h-5 w-5" />
                                     Add New Role
                                 </PrimaryButton>
@@ -665,7 +622,7 @@ export default function RolePermissionsIndex({
                         </p>
                         <div className="mt-6">
                             <Link href={route("admin.permissions.create")}>
-                                <PrimaryButton className="flex items-center bg-purple-600 hover:bg-purple-700 focus:ring-purple-500">
+                                <PrimaryButton className="flex items-center bg-accent-600 hover:bg-accent-700 focus:ring-accent-500">
                                     <FiPlus className="mr-2 h-5 w-5" />
                                     Add New Permission
                                 </PrimaryButton>
@@ -703,14 +660,14 @@ export default function RolePermissionsIndex({
         () =>
             type === "roles" ? (
                 <Link href={route("admin.roles.create")}>
-                    <PrimaryButton className="flex items-center bg-orange-600 hover:bg-orange-700 focus:ring-orange-500">
+                    <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
                         <FiPlus className="mr-2 h-5 w-5" />
                         Add Role
                     </PrimaryButton>
                 </Link>
             ) : (
                 <Link href={route("admin.permissions.create")}>
-                    <PrimaryButton className="flex items-center bg-purple-600 hover:bg-purple-700 focus:ring-purple-500">
+                    <PrimaryButton className="flex items-center bg-accent-600 hover:bg-accent-700 focus:ring-accent-500">
                         <FiPlus className="mr-2 h-5 w-5" />
                         Add Permission
                     </PrimaryButton>
@@ -719,7 +676,6 @@ export default function RolePermissionsIndex({
         [type]
     );
 
-    // Cek apakah user memiliki permission untuk manage roles atau permissions
     const canManageRoles =
         auth.user?.permissions?.includes("manage.roles") ||
         auth.user?.roles?.includes("master");
@@ -734,7 +690,6 @@ export default function RolePermissionsIndex({
             <Head
                 title={type === "roles" ? "Manage Roles" : "Manage Permissions"}
             />
-
             <ConfirmationModal
                 isOpen={deleteModal.isOpen}
                 onClose={closeDeleteModal}
@@ -750,7 +705,6 @@ export default function RolePermissionsIndex({
                 }`}
                 cancelText="Cancel"
             />
-
             <ConfirmationModal
                 isOpen={bulkDeleteModal.isOpen}
                 onClose={closeBulkDeleteModal}
@@ -770,7 +724,6 @@ export default function RolePermissionsIndex({
                 }`}
                 cancelText="Cancel"
             />
-
             <CrudLayout
                 title={
                     type === "roles"
@@ -789,10 +742,10 @@ export default function RolePermissionsIndex({
                             <div className="flex space-x-1">
                                 <button
                                     onClick={() => handleTypeChange("roles")}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium ${
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium ${
                                         type === "roles"
-                                            ? "bg-orange-600 text-white"
-                                            : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                                            ? "bg-primary-600 text-white"
+                                            : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600"
                                     }`}
                                 >
                                     <FiShield className="inline mr-2 h-4 w-4" />
@@ -802,10 +755,10 @@ export default function RolePermissionsIndex({
                                     onClick={() =>
                                         handleTypeChange("permissions")
                                     }
-                                    className={`px-4 py-2 rounded-md text-sm font-medium ${
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium ${
                                         type === "permissions"
-                                            ? "bg-purple-600 text-white"
-                                            : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                                            ? "bg-accent-600 text-white"
+                                            : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600"
                                     }`}
                                 >
                                     <FiKey className="inline mr-2 h-4 w-4" />
@@ -824,11 +777,11 @@ export default function RolePermissionsIndex({
                 }
             >
                 {flash.success && (
-                    <div className="mb-8 bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-md p-4">
+                    <div className="mb-8 bg-success-50 dark:bg-success-900/30 border border-success-200 dark:border-success-800 rounded-xl p-4">
                         <div className="flex">
                             <div className="flex-shrink-0">
                                 <svg
-                                    className="h-5 w-5 text-orange-400"
+                                    className="h-5 w-5 text-success-400"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
@@ -841,20 +794,19 @@ export default function RolePermissionsIndex({
                                 </svg>
                             </div>
                             <div className="ml-3">
-                                <p className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                                <p className="text-sm font-medium text-success-800 dark:text-success-200">
                                     {flash.success}
                                 </p>
                             </div>
                         </div>
                     </div>
                 )}
-
                 {flash.error && (
-                    <div className="mb-8 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md p-4">
+                    <div className="mb-8 bg-error-50 dark:bg-error-900/30 border border-error-200 dark:border-error-800 rounded-xl p-4">
                         <div className="flex">
                             <div className="flex-shrink-0">
                                 <svg
-                                    className="h-5 w-5 text-red-400"
+                                    className="h-5 w-5 text-error-400"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
@@ -867,14 +819,13 @@ export default function RolePermissionsIndex({
                                 </svg>
                             </div>
                             <div className="ml-3">
-                                <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                                <p className="text-sm font-medium text-error-800 dark:text-error-200">
                                     {flash.error}
                                 </p>
                             </div>
                         </div>
                     </div>
                 )}
-
                 {selectedItems.length > 0 && (
                     <div className="mb-6">
                         <BulkActions
@@ -887,10 +838,9 @@ export default function RolePermissionsIndex({
                         />
                     </div>
                 )}
-
                 <div className="mb-6">
                     <DataTable
-                        key={type} // Tambahkan key ini untuk force re-render saat tab berubah
+                        key={type}
                         columns={columns}
                         data={data?.data || []}
                         selectedItems={selectedItems}
@@ -902,16 +852,12 @@ export default function RolePermissionsIndex({
                         keyField="id"
                     />
                 </div>
-
                 {data &&
                     data.data &&
                     data.data.length > 0 &&
                     data.links &&
                     data.links.length > 3 && (
-                        <Pagination
-                            data={data}
-                            filters={{ type: type }} // Tambahkan type ke filters
-                        />
+                        <Pagination data={data} filters={{ type }} />
                     )}
             </CrudLayout>
         </AdminLayout>

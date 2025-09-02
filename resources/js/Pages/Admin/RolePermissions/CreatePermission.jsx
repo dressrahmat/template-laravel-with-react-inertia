@@ -45,22 +45,18 @@ export default function CreatePermission() {
     return (
         <AdminLayout title="Create Permission">
             <Head title="Create Permission" />
-
-            <div className="mx-auto px-3 py-1">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
-                    {/* Header */}
+            <div className="mx-auto px-1 lg:px-4 lg:pt-2">
+                <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl shadow-card p-6 sm:p-8">
                     <div className="mb-8">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
                             Create New Permission
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2">
+                        <p className="text-neutral-600 dark:text-neutral-400 mt-2">
                             Add a new permission that can be assigned to roles
                             in your system.
                         </p>
                     </div>
-
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Name Field */}
                         <div>
                             <InputLabel
                                 htmlFor="name"
@@ -77,21 +73,18 @@ export default function CreatePermission() {
                                     }
                                     error={errors.name}
                                     placeholder="Enter permission name (e.g., users.create)"
-                                    icon={FiKey}
                                     className="pl-10"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiKey className="h-5 w-5 text-purple-400" />
+                                    <FiKey className="h-5 w-5 text-accent-400" />
                                 </div>
                             </div>
                             <InputError message={errors.name} />
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                                 Use dot notation for better organization (e.g.,
                                 users.create, users.edit, posts.delete)
                             </p>
                         </div>
-
-                        {/* Description Field */}
                         <div>
                             <InputLabel
                                 htmlFor="description"
@@ -111,21 +104,19 @@ export default function CreatePermission() {
                             </div>
                             <InputError message={errors.description} />
                         </div>
-
-                        {/* Form Actions */}
-                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-neutral-200 dark:border-neutral-700">
                             <Link
                                 href={route("admin.role-permissions.index", {
                                     type: "permissions",
                                 })}
-                                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors duration-200 font-medium"
+                                className="inline-flex items-center justify-center px-6 py-3 border border-neutral-300 rounded-xl text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors duration-200 font-medium"
                             >
                                 Cancel
                             </Link>
                             <PrimaryButton
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-3 bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
+                                className="px-6 py-3 bg-accent-600 hover:bg-accent-700 focus:ring-accent-500"
                             >
                                 {processing ? (
                                     <>

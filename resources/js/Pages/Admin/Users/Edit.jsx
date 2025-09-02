@@ -203,7 +203,7 @@ export default function EditUser({ user, roles }) {
         <AdminLayout title="Edit User">
             <Head title="Edit User" />
 
-            <div className="mx-auto px-1 lg:px-4 lg:pt-4">
+            <div className="mx-auto px-1 lg:px-4 lg:pt-2">
                 <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl shadow-card p-6 sm:p-8">
                     {/* Header */}
                     <div className="mb-8">
@@ -447,7 +447,7 @@ export default function EditUser({ user, roles }) {
                         </div>
 
                         {/* Password Section */}
-                        <div className="bg-neutral-50 dark:bg-neutral-700/50 p-6 rounded-xl">
+                        <div className="bg-neutral-50 dark:bg-neutral-700/50 p-2 rounded-xl">
                             <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
                                 Update Password
                             </h3>

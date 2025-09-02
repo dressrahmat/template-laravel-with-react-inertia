@@ -32,17 +32,12 @@ export default function EditRole({ role, permissions: allPermissions }) {
     const handlePermissionChange = (permissionName, isChecked) => {
         setData((prevData) => {
             const permissions = new Set(prevData.permissions);
-
             if (isChecked) {
                 permissions.add(permissionName);
             } else {
                 permissions.delete(permissionName);
             }
-
-            return {
-                ...prevData,
-                permissions: Array.from(permissions),
-            };
+            return { ...prevData, permissions: Array.from(permissions) };
         });
     };
 
@@ -61,21 +56,17 @@ export default function EditRole({ role, permissions: allPermissions }) {
     return (
         <AdminLayout title="Edit Role">
             <Head title="Edit Role" />
-
-            <div className="mx-auto px-3 py-1">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
-                    {/* Header */}
+            <div className="mx-auto px-1 lg:px-4 lg:pt-2">
+                <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl shadow-card p-6 sm:p-8">
                     <div className="mb-8">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
                             Edit Role
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2">
+                        <p className="text-neutral-600 dark:text-neutral-400 mt-2">
                             Update role information and permissions.
                         </p>
                     </div>
-
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Name Field */}
                         <div>
                             <InputLabel
                                 htmlFor="name"
@@ -92,48 +83,41 @@ export default function EditRole({ role, permissions: allPermissions }) {
                                     }
                                     error={errors.name}
                                     placeholder="Enter role name"
-                                    icon={FiShield}
                                     className="pl-10"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiShield className="h-5 w-5 text-orange-400" />
+                                    <FiShield className="h-5 w-5 text-primary-400" />
                                 </div>
                             </div>
                             <InputError message={errors.name} />
                         </div>
-
-                        {/* Permissions Section */}
-                        <div className="bg-gray-50 dark:bg-gray-700/30 p-6 rounded-lg">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                        <div className="bg-neutral-100 dark:bg-neutral-700/30 p-6 rounded-xl">
+                            <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-4">
                                 Permissions
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+                            <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-6">
                                 Select the permissions this role should have.
                             </p>
-
                             <PermissionCheckboxGroup
-                                permissions={safePermissions} // Gunakan safePermissions di sini
+                                permissions={safePermissions}
                                 selectedPermissions={data.permissions}
                                 onChange={handlePermissionChange}
                             />
-
                             <InputError message={errors.permissions} />
                         </div>
-
-                        {/* Form Actions */}
-                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-neutral-200 dark:border-neutral-700">
                             <Link
                                 href={route("admin.role-permissions.index", {
                                     type: "roles",
                                 })}
-                                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors duration-200 font-medium"
+                                className="inline-flex items-center justify-center px-6 py-3 border border-neutral-300 rounded-xl text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors duration-200 font-medium"
                             >
                                 Cancel
                             </Link>
                             <PrimaryButton
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-3 bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
+                                className="px-6 py-3 bg-primary-600 hover:bg-primary-700 focus:ring-primary-500"
                             >
                                 {processing ? (
                                     <>
