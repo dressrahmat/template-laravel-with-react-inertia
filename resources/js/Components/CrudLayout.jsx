@@ -12,11 +12,11 @@ const CrudLayout = ({
             {/* Header Section */}
             <div className="md:flex md:items-center md:justify-between mb-8">
                 <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">
+                    <h1 className="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:text-3xl sm:truncate">
                         {title}
                     </h1>
                     {description && (
-                        <p className="mt-2 text-sm text-gray-600">
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                             {description}
                         </p>
                     )}
@@ -29,16 +29,10 @@ const CrudLayout = ({
             </div>
 
             {/* Filters Section */}
-            {filters && (
-                <div className="mb-6 bg-white rounded-xl shadow-sm p-6">
-                    {filters}
-                </div>
-            )}
+            {filters}
 
             {/* Content */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                {children}
-            </div>
+            {children}
         </div>
     );
 };

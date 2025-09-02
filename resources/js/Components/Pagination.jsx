@@ -1,3 +1,4 @@
+// Components/Pagination.jsx
 import React from "react";
 import { Link } from "@inertiajs/react";
 
@@ -5,6 +6,7 @@ const Pagination = ({
     data,
     showingText = "Showing {from} to {to} of {total} results",
 }) => {
+    // Pastikan data dan links ada
     if (!data || !data.links || data.links.length <= 3) return null;
 
     const showingTextFormatted = showingText
@@ -13,26 +15,24 @@ const Pagination = ({
         .replace("{total}", data.total || 0);
 
     return (
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-gray-600">
+        <div className="px-4 py-3 bg-gray-50 dark:bg-slate-700 border-t border-gray-200 dark:border-gray-600 sm:px-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between">
+                <div className="text-sm text-gray-700 dark:text-gray-300 mb-4 sm:mb-0">
                     {showingTextFormatted}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1">
                     {data.links.map((link, index) => (
                         <Link
                             key={index}
                             href={link.url || "#"}
                             preserveState
                             preserveScroll
-                            className={`relative inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                            className={`relative inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md ${
                                 link.active
-                                    ? "bg-indigo-600 text-white shadow-md hover:bg-indigo-700 focus:ring-3 focus:ring-indigo-400 focus:ring-offset-2"
-                                    : "bg-white text-gray-700 border border-gray-300 shadow-sm hover:bg-gray-50 focus:ring-3 focus:ring-indigo-400 focus:ring-offset-2"
+                                    ? "z-10 bg-indigo-600 text-white focus:z-20 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    : "bg-white dark:bg-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-500 border border-gray-300 dark:border-gray-500"
                             } ${
-                                !link.url
-                                    ? "opacity-50 cursor-not-allowed pointer-events-none"
-                                    : "hover:shadow-md"
+                                !link.url ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />

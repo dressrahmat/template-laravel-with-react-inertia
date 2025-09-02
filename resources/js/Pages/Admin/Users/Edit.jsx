@@ -7,9 +7,16 @@ import PasswordInput from "@/Components/PasswordInput";
 import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
 import PrimaryButton from "@/Components/PrimaryButton";
-import { FiUser, FiMail, FiCamera, FiX, FiTrash2 } from "react-icons/fi";
+import {
+    FiUser,
+    FiMail,
+    FiCamera,
+    FiX,
+    FiTrash2,
+    FiShield,
+} from "react-icons/fi";
 
-export default function EditUser({ user }) {
+export default function EditUser({ user, roles }) {
     const { data, setData, errors, put, processing, reset } = useForm({
         name: user.name,
         email: user.email,
@@ -17,6 +24,7 @@ export default function EditUser({ user }) {
         password_confirmation: "",
         foto: null,
         remove_photo: false,
+        roles: user.roles ? user.roles.map((role) => role.name) : [],
         _method: "PUT",
     });
 
@@ -29,6 +37,9 @@ export default function EditUser({ user }) {
     const { success, error: showError } = useToast();
     const { props: pageProps } = usePage();
     const flash = pageProps.flash || {};
+
+    // Convert data.roles to a proper array to ensure it's always an array
+    const currentRoles = Array.isArray(data.roles) ? data.roles : [];
 
     useEffect(() => {
         if (flash.success) {
@@ -137,6 +148,19 @@ export default function EditUser({ user }) {
         );
     };
 
+    const handleRoleChange = (role) => {
+        setData("roles", (prev) => {
+            // Pastikan prev selalu array
+            const prevRoles = Array.isArray(prev) ? prev : [];
+
+            if (prevRoles.includes(role)) {
+                return prevRoles.filter((r) => r !== role);
+            } else {
+                return [...prevRoles, role];
+            }
+        });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -145,14 +169,17 @@ export default function EditUser({ user }) {
         formData.append("email", data.email);
         formData.append("password", data.password);
         formData.append("password_confirmation", data.password_confirmation);
-        formData.append("remove_photo", data.remove_photo);
+        formData.append("remove_photo", data.remove_photo ? "1" : "0");
+        currentRoles.forEach((role) => formData.append("roles[]", role));
         formData.append("_method", "PUT");
 
         if (data.foto) {
             formData.append("foto", data.foto);
         }
 
-        put(route("admin.users.update", user.id), formData, {
+        put(route("admin.users.update", user.id), {
+            data: formData,
+            forceFormData: true,
             onSuccess: () => {
                 success("User updated successfully!");
                 reset("password", "password_confirmation");
@@ -176,7 +203,7 @@ export default function EditUser({ user }) {
         <AdminLayout title="Edit User">
             <Head title="Edit User" />
 
-            <div className="mx-auto px-3 py-1">
+            <div className="mx-auto px-1 lg:px-4 lg:pt-4">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
                     {/* Header */}
                     <div className="mb-8">
@@ -184,7 +211,7 @@ export default function EditUser({ user }) {
                             Edit User
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 mt-2">
-                            Update user information and permissions.
+                            Update user information, roles, and permissions.
                         </p>
                     </div>
 
@@ -319,7 +346,7 @@ export default function EditUser({ user }) {
                                             disabled={
                                                 photoUploading || photoRemoving
                                             }
-                                            className={`inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md font-medium text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 text-sm ${
+                                            className={`inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md font-medium text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-800 text-sm ${
                                                 photoUploading || photoRemoving
                                                     ? "bg-gray-200 dark:bg-gray-600 cursor-not-allowed opacity-50"
                                                     : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -338,7 +365,7 @@ export default function EditUser({ user }) {
                                                     photoUploading ||
                                                     photoRemoving
                                                 }
-                                                className={`inline-flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-md font-medium text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-800 text-sm ${
+                                                className={`inline-flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-md font-medium text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-800 text-sm ${
                                                     photoRemoving
                                                         ? "opacity-50 cursor-not-allowed"
                                                         : ""
@@ -410,7 +437,7 @@ export default function EditUser({ user }) {
                                     className="pl-10"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiUser className="h-5 w-5 text-gray-400" />
+                                    <FiUser className="h-5 w-5 text-orange-400" />
                                 </div>
                             </div>
                             <InputError message={errors.name} />
@@ -436,10 +463,40 @@ export default function EditUser({ user }) {
                                     className="pl-10"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiMail className="h-5 w-5 text-gray-400" />
+                                    <FiMail className="h-5 w-5 text-orange-400" />
                                 </div>
                             </div>
                             <InputError message={errors.email} />
+                        </div>
+
+                        {/* Roles Field */}
+                        <div>
+                            <InputLabel htmlFor="roles" value="User Roles" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
+                                {roles &&
+                                    roles.map((role) => (
+                                        <label
+                                            key={role}
+                                            className="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                value={role}
+                                                checked={currentRoles.includes(
+                                                    role
+                                                )}
+                                                onChange={() =>
+                                                    handleRoleChange(role)
+                                                }
+                                                className="rounded border-gray-300 text-orange-600 shadow-sm focus:ring-orange-500"
+                                            />
+                                            <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                {role}
+                                            </span>
+                                        </label>
+                                    ))}
+                            </div>
+                            <InputError message={errors.roles} />
                         </div>
 
                         {/* Password Fields */}
@@ -501,7 +558,7 @@ export default function EditUser({ user }) {
                             <PrimaryButton
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-3"
+                                className="px-6 py-3 bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
                             >
                                 {processing ? (
                                     <>

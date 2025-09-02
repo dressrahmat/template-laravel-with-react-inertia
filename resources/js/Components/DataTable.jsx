@@ -14,24 +14,24 @@ const DataTable = ({
     emptyState = null,
     rowActions = () => {},
     keyField = "id",
-    onRowClick = null,
+    onRowClick = null, // Tambahkan prop onRowClick
 }) => {
     return (
-        <div className="bg-white shadow rounded-xl overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 shadow rounded-lg overflow-hidden mb-20">
             <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-slate-700 sticky top-0 z-10">
                         <tr>
                             {/* Checkbox Column */}
                             <th
                                 scope="col"
-                                className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                             >
                                 <div className="flex items-center">
                                     <Checkbox
                                         checked={selectAll}
                                         onChange={onSelectAll}
-                                        className="mr-3"
+                                        className="mr-2"
                                     />
                                     Select
                                 </div>
@@ -42,7 +42,7 @@ const DataTable = ({
                                 <th
                                     key={column.key}
                                     scope="col"
-                                    className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+                                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                                     onClick={
                                         column.sortable
                                             ? () => column.onSort(column.key)
@@ -59,26 +59,26 @@ const DataTable = ({
                             {/* Actions Column */}
                             <th
                                 scope="col"
-                                className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50"
+                                className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider sticky right-0 bg-gray-50 dark:bg-slate-700"
                             >
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {data && data.length > 0 ? (
                             data.map((item) => (
                                 <tr
                                     key={item[keyField]}
-                                    className="hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
+                                    className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-150 cursor-pointer"
                                     onClick={() =>
                                         onRowClick && onRowClick(item)
-                                    }
+                                    } // Tambahkan onClick handler
                                 >
                                     {/* Checkbox Cell */}
                                     <td
-                                        className="px-6 py-4 whitespace-nowrap"
-                                        onClick={(e) => e.stopPropagation()}
+                                        className="px-4 py-4 whitespace-nowrap"
+                                        onClick={(e) => e.stopPropagation()} // Mencegah event bubbling ke row
                                     >
                                         <Checkbox
                                             checked={selectedItems.includes(
@@ -94,7 +94,7 @@ const DataTable = ({
                                     {columns.map((column) => (
                                         <td
                                             key={column.key}
-                                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                                            className="px-4 py-4 whitespace-nowrap"
                                         >
                                             {column.render
                                                 ? column.render(item)
@@ -102,10 +102,10 @@ const DataTable = ({
                                         </td>
                                     ))}
 
-                                    {/* Actions Cell */}
+                                    {/* Actions Cell - Sticky dengan dropdown */}
                                     <td
-                                        className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium sticky right-0 bg-white hover:bg-gray-50 z-5"
-                                        onClick={(e) => e.stopPropagation()}
+                                        className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium sticky right-0 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 z-5"
+                                        onClick={(e) => e.stopPropagation()} // Mencegah event bubbling ke row
                                     >
                                         {rowActions(item)}
                                     </td>
@@ -115,7 +115,7 @@ const DataTable = ({
                             <tr>
                                 <td
                                     colSpan={columns.length + 2}
-                                    className="px-6 py-12 text-center"
+                                    className="px-6 py-8 text-center"
                                 >
                                     {emptyState}
                                 </td>

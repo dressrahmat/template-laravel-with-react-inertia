@@ -7,15 +7,16 @@ import PasswordInput from "@/Components/PasswordInput";
 import PrimaryButton from "@/Components/PrimaryButton";
 import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
-import { FiUser, FiMail, FiCamera, FiX } from "react-icons/fi";
+import { FiUser, FiMail, FiCamera, FiX, FiShield } from "react-icons/fi";
 
-export default function CreateUser() {
+export default function CreateUser({ roles }) {
     const { data, setData, errors, post, processing, reset } = useForm({
         name: "",
         email: "",
         password: "",
         password_confirmation: "",
         foto: null,
+        roles: [],
     });
 
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -23,6 +24,9 @@ export default function CreateUser() {
     const { success, error: showError } = useToast();
     const { props: pageProps } = usePage();
     const flash = pageProps.flash || {};
+
+    // Convert data.roles to a proper array to ensure it's always an array
+    const currentRoles = Array.isArray(data.roles) ? data.roles : [];
 
     useEffect(() => {
         if (flash.success) {
@@ -73,10 +77,30 @@ export default function CreateUser() {
         }
     };
 
+    const handleRoleChange = (role) => {
+        setData("roles", (prev) => {
+            // Pastikan prev selalu array
+            const prevRoles = Array.isArray(prev) ? prev : [];
+
+            if (prevRoles.includes(role)) {
+                return prevRoles.filter((r) => r !== role);
+            } else {
+                return [...prevRoles, role];
+            }
+        });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // Ensure roles is sent as an array
+        const formData = {
+            ...data,
+            roles: currentRoles,
+        };
+
         post(route("admin.users.store"), {
+            data: formData,
             onSuccess: () => {
                 success("User created successfully!");
                 reset();
@@ -97,7 +121,7 @@ export default function CreateUser() {
         <AdminLayout title="Create User">
             <Head title="Create User" />
 
-            <div className="mx-auto px-3 py-1">
+            <div className="mx-auto px-1 lg:px-4 lg:pt-4">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
                     {/* Header */}
                     <div className="mb-8">
@@ -105,8 +129,8 @@ export default function CreateUser() {
                             Create New User
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 mt-2">
-                            Add a new user to your system with appropriate
-                            permissions.
+                            Add a new user to your system with appropriate roles
+                            and permissions.
                         </p>
                     </div>
 
@@ -158,7 +182,7 @@ export default function CreateUser() {
                                     <button
                                         type="button"
                                         onClick={triggerFileInput}
-                                        className="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 text-sm"
+                                        className="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-800 text-sm"
                                     >
                                         <FiCamera className="w-4 h-4 mr-2" />
                                         Select Photo
@@ -197,11 +221,10 @@ export default function CreateUser() {
                                     }
                                     error={errors.name}
                                     placeholder="Enter full name"
-                                    icon={FiUser}
                                     className="pl-10"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiUser className="h-5 w-5 text-gray-400" />
+                                    <FiUser className="h-5 w-5 text-orange-400" />
                                 </div>
                             </div>
                             <InputError message={errors.name} />
@@ -224,14 +247,43 @@ export default function CreateUser() {
                                     }
                                     error={errors.email}
                                     placeholder="Enter email address"
-                                    icon={FiMail}
                                     className="pl-10"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiMail className="h-5 w-5 text-gray-400" />
+                                    <FiMail className="h-5 w-5 text-orange-400" />
                                 </div>
                             </div>
                             <InputError message={errors.email} />
+                        </div>
+
+                        {/* Roles Field */}
+                        <div>
+                            <InputLabel htmlFor="roles" value="User Roles" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
+                                {roles &&
+                                    roles.map((role) => (
+                                        <label
+                                            key={role}
+                                            className="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                value={role}
+                                                checked={currentRoles.includes(
+                                                    role
+                                                )}
+                                                onChange={() =>
+                                                    handleRoleChange(role)
+                                                }
+                                                className="rounded border-gray-300 text-orange-600 shadow-sm focus:ring-orange-500"
+                                            />
+                                            <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                {role}
+                                            </span>
+                                        </label>
+                                    ))}
+                            </div>
+                            <InputError message={errors.roles} />
                         </div>
 
                         {/* Password Fields */}
@@ -285,7 +337,7 @@ export default function CreateUser() {
                             <PrimaryButton
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-3"
+                                className="px-6 py-3 bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
                             >
                                 {processing ? (
                                     <>

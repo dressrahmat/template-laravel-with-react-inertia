@@ -13,10 +13,10 @@ const FilterSection = ({
     return (
         <div className="w-full">
             {/* Mobile Filter Toggle Button */}
-            <div className="sm:hidden mb-4">
+            <div className="sm:hidden mb-3">
                 <button
                     onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
-                    className="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
+                    className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600"
                 >
                     <div className="flex items-center">
                         <FiFilter className="mr-2 h-4 w-4" />
@@ -30,15 +30,15 @@ const FilterSection = ({
                 </button>
             </div>
 
-            {/* Main Filter Container */}
+            {/* Main Filter Container - Grid layout for desktop */}
             <div
                 className={`
         ${isMobileFiltersOpen ? "block" : "hidden"} 
-        sm:grid sm:grid-cols-3 sm:gap-6 sm:items-center
+        sm:grid sm:grid-cols-3 sm:gap-4 sm:items-center
       `}
             >
-                {/* Search Input */}
-                <div className="sm:col-span-2 mb-4 sm:mb-0">
+                {/* Search Input - Middle column (largest) on desktop */}
+                <div className="sm:col-span-2 mb-3 sm:mb-0">
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <FiSearch className="h-5 w-5 text-gray-400" />
@@ -47,29 +47,35 @@ const FilterSection = ({
                             type="text"
                             value={searchTerm}
                             onChange={(e) => onSearchChange(e.target.value)}
-                            placeholder="Search..."
-                            className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors duration-200"
+                            placeholder="Search users..."
+                            className="block w-full pl-10 pr-12 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-slate-700 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                         />
                         {searchTerm && (
                             <button
                                 onClick={() => onSearchChange("")}
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
                             >
-                                <FiX className="h-4 w-4" />
+                                <FiX className="h-4 w-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
                             </button>
                         )}
                     </div>
                 </div>
 
-                {/* Right side controls */}
+                {/* Right side columns for Per Page and Clear buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-end">
                     {/* Per Page Selector */}
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                         <label
                             htmlFor="per_page"
-                            className="text-sm font-medium text-gray-700 whitespace-nowrap"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap sm:block hidden"
                         >
                             Show:
+                        </label>
+                        <label
+                            htmlFor="per_page"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap sm:hidden block"
+                        >
+                            Items:
                         </label>
                         <select
                             id="per_page"
@@ -77,13 +83,11 @@ const FilterSection = ({
                             onChange={(e) =>
                                 onPerPageChange(Number(e.target.value))
                             }
-                            className="block w-full sm:w-20 pl-3 pr-8 py-2.5 text-base border border-gray-300 rounded-xl leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors duration-200"
+                            className="block w-full sm:w-20 pl-3 pr-8 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                         >
                             <option value={5}>5</option>
                             <option value={10}>10</option>
                             <option value={15}>15</option>
-                            <option value={20}>20</option>
-                            <option value={50}>50</option>
                         </select>
                     </div>
 
@@ -93,13 +97,23 @@ const FilterSection = ({
                             onClearFilters();
                             setIsMobileFiltersOpen(false);
                         }}
-                        className="inline-flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-auto transition-colors duration-200"
+                        className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-auto"
                     >
-                        <FiX className="mr-1.5 h-4 w-4" />
-                        Clear
+                        <FiX className="mr-1 h-4 w-4 sm:block hidden" />
+                        <span className="sm:block hidden">Clear</span>
+                        <span className="sm:hidden block">Reset</span>
                     </button>
                 </div>
             </div>
+
+            {/* Close mobile filters when clicking outside */}
+            {isMobileFiltersOpen && (
+                <div
+                    className="sm:hidden fixed inset-0 bg-black bg-opacity-25 z-40"
+                    onClick={() => setIsMobileFiltersOpen(false)}
+                    style={{ top: "calc(100% - 1px)" }}
+                />
+            )}
         </div>
     );
 };
