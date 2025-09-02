@@ -150,13 +150,13 @@ export default function Welcome({
                                 className="flex justify-center space-x-4"
                             >
                                 <Link
-                                    href={route("tentang")}
+                                    href="#"
                                     className="px-8 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                                 >
                                     Pelajari Lebih Lanjut
                                 </Link>
                                 <Link
-                                    href={route("kontak")}
+                                    href="#"
                                     className="px-8 py-3 border border-primary-600 text-primary-600 dark:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
                                 >
                                     Hubungi Kami
@@ -361,7 +361,7 @@ export default function Welcome({
 
                             <motion.div variants={itemVariants}>
                                 <Link
-                                    href={route("kontak")}
+                                    href="#"
                                     className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
                                 >
                                     Hubungi Sekarang

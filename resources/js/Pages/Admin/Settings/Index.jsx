@@ -269,10 +269,20 @@ export default function IndexSetting({ settings }) {
         e.preventDefault();
 
         put(route("admin.settings.update"), {
-            data,
+            // Inertia akan otomatis menangani FormData jika ada file
+            data: {
+                ...data,
+                // Konversi boolean ke integer untuk memastikan terkirim
+                google_analytics_enabled: data.google_analytics_enabled ? 1 : 0,
+                google_tag_manager_enabled: data.google_tag_manager_enabled
+                    ? 1
+                    : 0,
+                facebook_pixel_enabled: data.facebook_pixel_enabled ? 1 : 0,
+                google_adsense_enabled: data.google_adsense_enabled ? 1 : 0,
+                maintenance_mode: data.maintenance_mode ? 1 : 0,
+            },
             onSuccess: () => {
                 success("Settings updated successfully!");
-                // Reset file inputs
                 setData("site_logo", null);
                 setData("site_favicon", null);
                 setData("og_image", null);
@@ -280,7 +290,6 @@ export default function IndexSetting({ settings }) {
             onError: (errors) => {
                 showError("Failed to update settings. Please check the form.");
             },
-            // Inertia secara otomatis akan mengkonversi ke FormData ketika ada file
         });
     };
 

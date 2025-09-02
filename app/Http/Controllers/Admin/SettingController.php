@@ -72,12 +72,13 @@ class SettingController extends Controller
             'maintenance_message' => 'nullable|string',
         ]);
 
+        
         if ($validator->fails()) {
             return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            ->withErrors($validator)
+            ->withInput();
         }
-
+        
         $data = $request->except(['site_logo', 'site_favicon', 'og_image']);
 
         // Handle site logo upload
@@ -96,11 +97,11 @@ class SettingController extends Controller
         }
 
         // Update boolean fields
-        $data['google_analytics_enabled'] = $request->has('google_analytics_enabled');
-        $data['google_tag_manager_enabled'] = $request->has('google_tag_manager_enabled');
-        $data['facebook_pixel_enabled'] = $request->has('facebook_pixel_enabled');
-        $data['google_adsense_enabled'] = $request->has('google_adsense_enabled');
-        $data['maintenance_mode'] = $request->has('maintenance_mode');
+        $data['google_analytics_enabled'] = (bool) $request->input('google_analytics_enabled', false);
+        $data['google_tag_manager_enabled'] = (bool) $request->input('google_tag_manager_enabled', false);
+        $data['facebook_pixel_enabled'] = (bool) $request->input('facebook_pixel_enabled', false);
+        $data['google_adsense_enabled'] = (bool) $request->input('google_adsense_enabled', false);
+        $data['maintenance_mode'] = (bool) $request->input('maintenance_mode', false);
 
         try {
             $settings->update($data);

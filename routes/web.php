@@ -13,16 +13,7 @@ use App\Http\Controllers\Admin\RolePermissionController;
 
 // Route untuk frontend (publik)
 Route::get('/', [BerandaController::class, 'index'])->name('welcome');
-Route::get('/tentang', [BerandaController::class, 'tentang'])->name('tentang');
-Route::get('/kontak', [BerandaController::class, 'kontak'])->name('kontak');
-Route::get('/maintenance', [BerandaController::class, 'maintenance'])->name('maintenance');
 
-// Middleware untuk maintenance mode
-Route::middleware(['check.maintenance'])->group(function () {
-    Route::get('/', [BerandaController::class, 'index'])->name('welcome');
-    Route::get('/tentang', [BerandaController::class, 'tentang'])->name('tentang');
-    Route::get('/kontak', [BerandaController::class, 'kontak'])->name('kontak');
-});
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
