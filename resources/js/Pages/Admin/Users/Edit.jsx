@@ -169,26 +169,10 @@ export default function EditUser({ user, roles }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("email", data.email);
-        formData.append("password", data.password);
-        formData.append("password_confirmation", data.password_confirmation);
-        formData.append("remove_photo", data.remove_photo ? "1" : "0");
-        formData.append("_method", "PUT");
-
-        // Tambahkan roles sebagai array
-        if (Array.isArray(data.roles)) {
-            data.roles.forEach((role) => formData.append("roles[]", role));
-        }
-
-        if (data.foto) {
-            formData.append("foto", data.foto);
-        }
-
+        // Menggunakan data langsung tanpa FormData manual
+        // Inertia akan otomatis menangani FormData jika ada file
         put(route("admin.users.update", user.id), {
-            data: formData,
-            forceFormData: true,
+            ...data,
             onSuccess: () => {
                 success("User updated successfully!");
                 reset("password", "password_confirmation");
@@ -224,7 +208,11 @@ export default function EditUser({ user, roles }) {
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form
+                        onSubmit={handleSubmit}
+                        className="space-y-6"
+                        encType="multipart/form-data"
+                    >
                         {/* Photo Upload */}
                         <div>
                             <InputLabel htmlFor="foto" value="Profile Photo" />

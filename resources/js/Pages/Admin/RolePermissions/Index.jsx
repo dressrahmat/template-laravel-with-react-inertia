@@ -831,7 +831,7 @@ export default function RolePermissionsIndex({
                         <BulkActions
                             selectedCount={selectedItems.length}
                             onBulkDelete={openBulkDeleteModal}
-                            onClearSelection={() => {
+                            onClearSelected={() => {
                                 clearSelectedItems();
                                 setSelectAll(false);
                             }}

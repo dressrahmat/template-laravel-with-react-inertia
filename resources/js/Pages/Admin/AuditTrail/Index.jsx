@@ -881,7 +881,7 @@ export default function AuditTrailIndex({
                                     : null
                             }
                             onBulkExport={handleExport}
-                            onClearSelection={() => {
+                            onClearSelected={() => {
                                 clearSelectedAuditTrails();
                                 setSelectAll(false);
                             }}

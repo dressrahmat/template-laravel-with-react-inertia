@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/users/bulk-update', [UserController::class, 'bulkUpdate'])->name('users.bulk-update');
             // Upload foto
             Route::post('/users/{user}/update-foto', [UserController::class, 'updatePhoto'])->name('users.update-photo');
+            Route::post('/users/{user}/remove-foto', [UserController::class, 'removePhoto'])->name('users.remove-photo');
         });
 
         // Roles - hanya untuk yang memiliki permission manage roles

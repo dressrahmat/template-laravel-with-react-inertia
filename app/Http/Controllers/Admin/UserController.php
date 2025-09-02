@@ -149,6 +149,7 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'foto_path' => $user->foto_path,
                 'roles' => $user->getRoleNames()->toArray(), // Pastikan array
             ],
             'roles' => $roles,
