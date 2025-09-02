@@ -31,11 +31,17 @@ class RolePermissionSeeder extends Seeder
             'create permissions',
             'edit permissions',
             'delete permissions',
+            
+            // Permission baru untuk manage settings
+            'manage settings',
+            'view settings',
+            'edit settings',
 
             'view audit trail',
             'view audit trail users',
             'view audit trail roles',
             'view audit trail permissions',
+            'view audit trail settings', // Permission baru untuk audit trail settings
         ];
 
         foreach ($permissions as $permission) {
@@ -47,6 +53,21 @@ class RolePermissionSeeder extends Seeder
         // Role Master - memiliki semua permissions
         $masterRole = Role::firstOrCreate(['name' => 'master']);
         $masterRole->syncPermissions(Permission::all());
+
+        // Role Admin - memiliki permissions terbatas
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $adminPermissions = [
+            'view dashboard',
+            'access admin panel',
+            'manage users',
+            'view roles',
+            'view permissions',
+            'manage settings',
+            'view settings',
+            'edit settings',
+            'view audit trail',
+        ];
+        $adminRole->syncPermissions($adminPermissions);
 
         // Hanya membuat user master saja
         $masterUser = User::firstOrCreate(

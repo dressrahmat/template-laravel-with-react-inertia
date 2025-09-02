@@ -4,20 +4,25 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Front\BerandaController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\Admin\RolePermissionController;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+// Route untuk frontend (publik)
+Route::get('/', [BerandaController::class, 'index'])->name('welcome');
+Route::get('/tentang', [BerandaController::class, 'tentang'])->name('tentang');
+Route::get('/kontak', [BerandaController::class, 'kontak'])->name('kontak');
+Route::get('/maintenance', [BerandaController::class, 'maintenance'])->name('maintenance');
 
+// Middleware untuk maintenance mode
+Route::middleware(['check.maintenance'])->group(function () {
+    Route::get('/', [BerandaController::class, 'index'])->name('welcome');
+    Route::get('/tentang', [BerandaController::class, 'tentang'])->name('tentang');
+    Route::get('/kontak', [BerandaController::class, 'kontak'])->name('kontak');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -67,7 +72,14 @@ Route::middleware('auth')->group(function () {
             Route::put('/permissions/{permission}', [RolePermissionController::class, 'updatePermission'])->name('permissions.update');
         });
 
-        // Roles - hanya untuk yang memiliki permission view audit trail
+        // Settings - hanya untuk yang memiliki permission manage settings
+        Route::middleware(['permission:manage settings'])->group(function () {
+            Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+            Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+            Route::delete('/settings/images/{type}', [SettingController::class, 'removeImage'])->name('settings.removeImage');
+        });
+
+        // Audit Trail - hanya untuk yang memiliki permission view audit trail
         Route::middleware(['permission:view audit trail'])->group(function () {
             Route::get('/audit-trail/notifications', [AuditTrailController::class, 'notifications'])->name('audit-trail.notifications');
             Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('audit-trail.index');
