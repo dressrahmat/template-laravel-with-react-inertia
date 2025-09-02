@@ -14,7 +14,6 @@ import {
     FiMapPin,
     FiCamera,
     FiX,
-    FiTrash2,
     FiCode,
     FiShield,
     FiBarChart2,
@@ -77,8 +76,6 @@ export default function IndexSetting({ settings }) {
         // Maintenance
         maintenance_mode: settings.maintenance_mode || false,
         maintenance_message: settings.maintenance_message || "",
-
-        _method: "PUT",
     });
 
     const [logoPreview, setLogoPreview] = useState(
@@ -108,7 +105,83 @@ export default function IndexSetting({ settings }) {
         }
     }, [flash]);
 
-    const handleImageChange = (file, type) => {
+    const uploadLogo = async (file) => {
+        const formData = new FormData();
+        formData.append("site_logo", file);
+
+        try {
+            const response = await axios.post(
+                route("admin.settings.upload-logo"),
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            if (response.data.success) {
+                success("Logo uploaded successfully!");
+                return response.data.path;
+            }
+        } catch (error) {
+            showError("Failed to upload logo");
+            throw error;
+        }
+    };
+
+    const uploadFavicon = async (file) => {
+        const formData = new FormData();
+        formData.append("site_favicon", file);
+
+        try {
+            const response = await axios.post(
+                route("admin.settings.upload-favicon"),
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            if (response.data.success) {
+                success("Favicon uploaded successfully!");
+                return response.data.path;
+            }
+        } catch (error) {
+            showError("Failed to upload favicon");
+            throw error;
+        }
+    };
+
+    const uploadOgImage = async (file) => {
+        const formData = new FormData();
+        formData.append("og_image", file);
+
+        try {
+            const response = await axios.post(
+                route("admin.settings.upload-og-image"),
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            if (response.data.success) {
+                success("OG Image uploaded successfully!");
+                return response.data.path;
+            }
+        } catch (error) {
+            showError("Failed to upload OG Image");
+            throw error;
+        }
+    };
+
+    // Update handleImageChange untuk menggunakan fungsi upload individual
+    const handleImageChange = async (file, type) => {
         if (!file) return;
 
         if (!file.type.startsWith("image/")) {
@@ -135,20 +208,35 @@ export default function IndexSetting({ settings }) {
             return;
         }
 
-        const url = URL.createObjectURL(file);
-        switch (type) {
-            case "logo":
-                setLogoPreview(url);
-                setData("site_logo", file);
-                break;
-            case "favicon":
-                setFaviconPreview(url);
-                setData("site_favicon", file);
-                break;
-            case "og_image":
-                setOgImagePreview(url);
-                setData("og_image", file);
-                break;
+        try {
+            let uploadedPath;
+            switch (type) {
+                case "logo":
+                    uploadedPath = await uploadLogo(file);
+                    break;
+                case "favicon":
+                    uploadedPath = await uploadFavicon(file);
+                    break;
+                case "og_image":
+                    uploadedPath = await uploadOgImage(file);
+                    break;
+            }
+
+            // Update preview
+            const url = URL.createObjectURL(file);
+            switch (type) {
+                case "logo":
+                    setLogoPreview(url);
+                    break;
+                case "favicon":
+                    setFaviconPreview(url);
+                    break;
+                case "og_image":
+                    setOgImagePreview(url);
+                    break;
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
         }
     };
 
@@ -181,7 +269,7 @@ export default function IndexSetting({ settings }) {
         e.preventDefault();
 
         put(route("admin.settings.update"), {
-            ...data,
+            data,
             onSuccess: () => {
                 success("Settings updated successfully!");
                 // Reset file inputs
@@ -192,6 +280,7 @@ export default function IndexSetting({ settings }) {
             onError: (errors) => {
                 showError("Failed to update settings. Please check the form.");
             },
+            // Inertia secara otomatis akan mengkonversi ke FormData ketika ada file
         });
     };
 
@@ -547,7 +636,7 @@ export default function IndexSetting({ settings }) {
                                         <h4 className="font-semibold text-neutral-900 dark:text-white">
                                             Facebook Pixel
                                         </h4>
-                                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                                        <p className="text-sm text-native-600 dark:text-native-400">
                                             Track Facebook ad conversions
                                         </p>
                                     </div>

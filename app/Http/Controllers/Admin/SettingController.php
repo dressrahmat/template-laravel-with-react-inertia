@@ -82,35 +82,17 @@ class SettingController extends Controller
 
         // Handle site logo upload
         if ($request->hasFile('site_logo')) {
-            // Delete old logo if exists
-            if ($settings->site_logo && Storage::disk('public')->exists($settings->site_logo)) {
-                Storage::disk('public')->delete($settings->site_logo);
-            }
-            
-            $path = $request->file('site_logo')->store('settings', 'public');
-            $data['site_logo'] = $path;
+            $data['site_logo'] = $this->uploadLogo($request->file('site_logo'), $settings);
         }
 
         // Handle favicon upload
         if ($request->hasFile('site_favicon')) {
-            // Delete old favicon if exists
-            if ($settings->site_favicon && Storage::disk('public')->exists($settings->site_favicon)) {
-                Storage::disk('public')->delete($settings->site_favicon);
-            }
-            
-            $path = $request->file('site_favicon')->store('settings', 'public');
-            $data['site_favicon'] = $path;
+            $data['site_favicon'] = $this->uploadFavicon($request->file('site_favicon'), $settings);
         }
 
         // Handle OG image upload
         if ($request->hasFile('og_image')) {
-            // Delete old OG image if exists
-            if ($settings->og_image && Storage::disk('public')->exists($settings->og_image)) {
-                Storage::disk('public')->delete($settings->og_image);
-            }
-            
-            $path = $request->file('og_image')->store('settings', 'public');
-            $data['og_image'] = $path;
+            $data['og_image'] = $this->uploadOgImage($request->file('og_image'), $settings);
         }
 
         // Update boolean fields
@@ -129,6 +111,63 @@ class SettingController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal memperbarui pengaturan: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Upload logo dengan method khusus
+     */
+    private function uploadLogo($file, $settings)
+    {
+        // Delete old logo if exists
+        if ($settings->site_logo && Storage::disk('public')->exists($settings->site_logo)) {
+            Storage::disk('public')->delete($settings->site_logo);
+        }
+        
+        // Generate unique filename for logo
+        $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+        
+        // Store in settings directory
+        $path = $file->storeAs('settings', $filename, 'public');
+        
+        return $path;
+    }
+
+    /**
+     * Upload favicon dengan method khusus
+     */
+    private function uploadFavicon($file, $settings)
+    {
+        // Delete old favicon if exists
+        if ($settings->site_favicon && Storage::disk('public')->exists($settings->site_favicon)) {
+            Storage::disk('public')->delete($settings->site_favicon);
+        }
+        
+        // Generate unique filename for favicon
+        $filename = 'favicon_' . time() . '.' . $file->getClientOriginalExtension();
+        
+        // Store in settings directory
+        $path = $file->storeAs('settings', $filename, 'public');
+        
+        return $path;
+    }
+
+    /**
+     * Upload OG image dengan method khusus
+     */
+    private function uploadOgImage($file, $settings)
+    {
+        // Delete old OG image if exists
+        if ($settings->og_image && Storage::disk('public')->exists($settings->og_image)) {
+            Storage::disk('public')->delete($settings->og_image);
+        }
+        
+        // Generate unique filename for OG image
+        $filename = 'og_image_' . time() . '.' . $file->getClientOriginalExtension();
+        
+        // Store in settings directory
+        $path = $file->storeAs('settings', $filename, 'public');
+        
+        return $path;
     }
 
     public function removeImage(Request $request, $type)
@@ -192,6 +231,90 @@ class SettingController extends Controller
                 return response($settings->footer_scripts ?? '');
             default:
                 return response('', 200);
+        }
+    }
+
+    /**
+     * Method khusus untuk upload logo saja
+     */
+    public function uploadLogoOnly(Request $request)
+    {
+        $request->validate([
+            'site_logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ]);
+
+        $settings = Setting::firstOrCreate([]);
+        
+        try {
+            $path = $this->uploadLogo($request->file('site_logo'), $settings);
+            $settings->update(['site_logo' => $path]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Logo berhasil diupload',
+                'path' => Storage::url($path)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal upload logo: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Method khusus untuk upload favicon saja
+     */
+    public function uploadFaviconOnly(Request $request)
+    {
+        $request->validate([
+            'site_favicon' => 'required|image|mimes:ico,png|max:1024'
+        ]);
+
+        $settings = Setting::firstOrCreate([]);
+        
+        try {
+            $path = $this->uploadFavicon($request->file('site_favicon'), $settings);
+            $settings->update(['site_favicon' => $path]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Favicon berhasil diupload',
+                'path' => Storage::url($path)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal upload favicon: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Method khusus untuk upload OG image saja
+     */
+    public function uploadOgImageOnly(Request $request)
+    {
+        $request->validate([
+            'og_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $settings = Setting::firstOrCreate([]);
+        
+        try {
+            $path = $this->uploadOgImage($request->file('og_image'), $settings);
+            $settings->update(['og_image' => $path]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'OG Image berhasil diupload',
+                'path' => Storage::url($path)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal upload OG Image: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

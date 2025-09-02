@@ -77,6 +77,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
             Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
             Route::delete('/settings/images/{type}', [SettingController::class, 'removeImage'])->name('settings.removeImage');
+            
+            // Route khusus untuk upload file individual
+            Route::post('/settings/upload-logo', [SettingController::class, 'uploadLogoOnly'])->name('settings.upload-logo');
+            Route::post('/settings/upload-favicon', [SettingController::class, 'uploadFaviconOnly'])->name('settings.upload-favicon');
+            Route::post('/settings/upload-og-image', [SettingController::class, 'uploadOgImageOnly'])->name('settings.upload-og-image');
         });
 
         // Audit Trail - hanya untuk yang memiliki permission view audit trail
