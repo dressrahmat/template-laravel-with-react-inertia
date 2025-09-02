@@ -12,11 +12,11 @@ const CrudLayout = ({
             {/* Header Section */}
             <div className="md:flex md:items-center md:justify-between mb-8">
                 <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:text-3xl sm:truncate">
+                    <h1 className="text-2xl font-bold leading-7 text-neutral-900 dark:text-neutral-100 sm:text-3xl sm:truncate">
                         {title}
                     </h1>
                     {description && (
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                             {description}
                         </p>
                     )}

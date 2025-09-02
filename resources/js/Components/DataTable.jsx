@@ -14,18 +14,18 @@ const DataTable = ({
     emptyState = null,
     rowActions = () => {},
     keyField = "id",
-    onRowClick = null, // Tambahkan prop onRowClick
+    onRowClick = null,
 }) => {
     return (
-        <div className="bg-white dark:bg-slate-800 shadow rounded-lg overflow-hidden mb-20">
+        <div className="bg-neutral-50 dark:bg-neutral-800 shadow-card rounded-xl overflow-hidden mb-20">
             <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-slate-700 sticky top-0 z-10">
+                <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
+                    <thead className="bg-neutral-50 dark:bg-neutral-700 sticky top-0 z-10">
                         <tr>
                             {/* Checkbox Column */}
                             <th
                                 scope="col"
-                                className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                                className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider"
                             >
                                 <div className="flex items-center">
                                     <Checkbox
@@ -42,7 +42,7 @@ const DataTable = ({
                                 <th
                                     key={column.key}
                                     scope="col"
-                                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                                    className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider cursor-pointer"
                                     onClick={
                                         column.sortable
                                             ? () => column.onSort(column.key)
@@ -59,26 +59,26 @@ const DataTable = ({
                             {/* Actions Column */}
                             <th
                                 scope="col"
-                                className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider sticky right-0 bg-gray-50 dark:bg-slate-700"
+                                className="px-4 py-3 text-right text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider sticky right-0 bg-neutral-50 dark:bg-neutral-700"
                             >
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-neutral-50 dark:bg-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-700">
                         {data && data.length > 0 ? (
                             data.map((item) => (
                                 <tr
                                     key={item[keyField]}
-                                    className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-150 cursor-pointer"
+                                    className="hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-150 cursor-pointer"
                                     onClick={() =>
                                         onRowClick && onRowClick(item)
-                                    } // Tambahkan onClick handler
+                                    }
                                 >
                                     {/* Checkbox Cell */}
                                     <td
                                         className="px-4 py-4 whitespace-nowrap"
-                                        onClick={(e) => e.stopPropagation()} // Mencegah event bubbling ke row
+                                        onClick={(e) => e.stopPropagation()}
                                     >
                                         <Checkbox
                                             checked={selectedItems.includes(
@@ -104,8 +104,8 @@ const DataTable = ({
 
                                     {/* Actions Cell - Sticky dengan dropdown */}
                                     <td
-                                        className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium sticky right-0 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 z-5"
-                                        onClick={(e) => e.stopPropagation()} // Mencegah event bubbling ke row
+                                        className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium sticky right-0 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 z-5"
+                                        onClick={(e) => e.stopPropagation()}
                                     >
                                         {rowActions(item)}
                                     </td>
@@ -115,7 +115,7 @@ const DataTable = ({
                             <tr>
                                 <td
                                     colSpan={columns.length + 2}
-                                    className="px-6 py-8 text-center"
+                                    className="px-6 py-8 text-center text-neutral-600 dark:text-neutral-400"
                                 >
                                     {emptyState}
                                 </td>

@@ -101,12 +101,12 @@ export default function AdminLayout({ children, title }) {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+        <div className="flex h-screen overflow-hidden bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <Head title={title} />
 
             {/* Sidebar Mobile Overlay */}
             <div
-                className={`fixed inset-0 z-40 md:hidden bg-gray-900 bg-opacity-50 transition-opacity duration-300 ease-in-out ${
+                className={`fixed inset-0 z-40 md:hidden bg-neutral-900 bg-opacity-50 transition-opacity duration-300 ease-in-out ${
                     sidebarOpen
                         ? "opacity-100"
                         : "opacity-0 pointer-events-none"
@@ -116,20 +116,20 @@ export default function AdminLayout({ children, title }) {
 
             {/* Sidebar */}
             <div
-                className={`fixed z-50 md:static bg-white dark:bg-gray-800 shadow-lg transition-transform md:transition-all duration-300 ease-in-out h-screen ${
+                className={`fixed z-50 md:static bg-neutral-50 dark:bg-neutral-800 shadow-card transition-transform md:transition-all duration-300 ease-in-out h-screen rounded-r-xl ${
                     sidebarOpen ? "translate-x-0" : "-translate-x-full"
                 } ${sidebarExpanded ? "w-64" : "w-20"} md:translate-x-0`}
             >
-                <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+                <div className="p-4 flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700">
                     {/* Logo yang berubah sesuai state sidebar */}
                     <div className="flex items-center">
                         {sidebarExpanded ? (
-                            <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                            <h1 className="text-xl font-bold text-primary-500 dark:text-primary-400">
                                 Admin
                             </h1>
                         ) : (
                             <div className="w-10 h-10 flex items-center justify-center">
-                                <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                <span className="text-2xl font-bold text-primary-500 dark:text-primary-400">
                                     A
                                 </span>
                             </div>
@@ -139,14 +139,14 @@ export default function AdminLayout({ children, title }) {
                     <div className="flex space-x-1">
                         <button
                             onClick={() => setSidebarExpanded(true)}
-                            className={`p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                            className={`p-1 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
                                 sidebarExpanded ? "hidden" : ""
                             }`}
                             title="Expand sidebar"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
+                                className="h-5 w-5 text-neutral-600 dark:text-neutral-400"
                                 viewBox="0 0 20 20"
                                 fill="currentColor"
                             >
@@ -159,14 +159,14 @@ export default function AdminLayout({ children, title }) {
                         </button>
                         <button
                             onClick={() => setSidebarExpanded(false)}
-                            className={`p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                            className={`p-1 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
                                 sidebarExpanded ? "" : "hidden"
                             }`}
                             title="Collapse sidebar"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
+                                className="h-5 w-5 text-neutral-600 dark:text-neutral-400"
                                 viewBox="0 0 20 20"
                                 fill="currentColor"
                             >
@@ -190,8 +190,8 @@ export default function AdminLayout({ children, title }) {
                                     href={route("dashboard")}
                                     className={`flex items-center p-2 rounded-md transition-colors duration-200 ${
                                         isActive("dashboard")
-                                            ? "bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 border-r-4 border-indigo-600 dark:border-indigo-400"
-                                            : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                                            ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-200 border-r-4 border-primary-600 dark:border-primary-400"
+                                            : "hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300"
                                     }`}
                                 >
                                     <svg
@@ -220,8 +220,8 @@ export default function AdminLayout({ children, title }) {
                                     href={route("admin.users.index")}
                                     className={`flex items-center p-2 rounded-md transition-colors duration-200 ${
                                         isActive("admin.users.*")
-                                            ? "bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 border-r-4 border-indigo-600 dark:border-indigo-400"
-                                            : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                                            ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-200 border-r-4 border-primary-600 dark:border-primary-400"
+                                            : "hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300"
                                     }`}
                                 >
                                     <svg
@@ -255,8 +255,8 @@ export default function AdminLayout({ children, title }) {
                                         isActive("admin.role-permissions.*") ||
                                         isActive("admin.roles.*") ||
                                         isActive("admin.permissions.*")
-                                            ? "bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 border-r-4 border-indigo-600 dark:border-indigo-400"
-                                            : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                                            ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-200 border-r-4 border-primary-600 dark:border-primary-400"
+                                            : "hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300"
                                     }`}
                                 >
                                     <svg
@@ -288,16 +288,16 @@ export default function AdminLayout({ children, title }) {
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Navbar */}
-                <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+                <header className="bg-neutral-50 dark:bg-neutral-800 shadow-sm border-b border-neutral-200 dark:border-neutral-700">
                     <div className="flex items-center justify-between px-4 py-3">
                         <div className="flex items-center">
                             <button
                                 onClick={() => setSidebarOpen(true)}
-                                className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 mr-2 md:hidden"
+                                className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 mr-2 md:hidden"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
+                                    className="h-5 w-5 text-neutral-600 dark:text-neutral-400"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
                                 >
@@ -308,7 +308,7 @@ export default function AdminLayout({ children, title }) {
                                     />
                                 </svg>
                             </button>
-                            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                                 {title}
                             </h2>
                         </div>
@@ -316,7 +316,7 @@ export default function AdminLayout({ children, title }) {
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={() => setIsDark(!isDark)}
-                                className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                                className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
                             >
                                 {isDark ? (
                                     <svg
@@ -348,7 +348,7 @@ export default function AdminLayout({ children, title }) {
                                     onClick={() =>
                                         setNotificationsOpen(!notificationsOpen)
                                     }
-                                    className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 relative"
+                                    className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 relative"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -358,40 +358,45 @@ export default function AdminLayout({ children, title }) {
                                     >
                                         <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                                     </svg>
-                                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-0 right-0 w-2 h-2 bg-error-500 rounded-full"></span>
+                                    )}
                                 </button>
                                 <div
-                                    className={`absolute right-0 mt-2 w-64 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-600 ${
+                                    className={`absolute right-0 mt-2 w-64 bg-neutral-50 dark:bg-neutral-700 rounded-xl shadow-card py-1 z-50 border border-neutral-200 dark:border-neutral-600 ${
                                         notificationsOpen ? "" : "hidden"
                                     }`}
                                 >
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    >
-                                        New message
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    >
-                                        System update
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    >
-                                        New user registered
-                                    </a>
+                                    {loadingNotifications ? (
+                                        <div className="px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300">
+                                            Loading...
+                                        </div>
+                                    ) : notifications.length > 0 ? (
+                                        notifications.map(
+                                            (notification, index) => (
+                                                <a
+                                                    key={index}
+                                                    href="#"
+                                                    className="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"
+                                                >
+                                                    {notification.message}
+                                                </a>
+                                            )
+                                        )
+                                    ) : (
+                                        <div className="px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300">
+                                            No notifications
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
                             <div className="relative">
                                 <button
                                     onClick={() => setProfileOpen(!profileOpen)}
-                                    className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                                    className="flex items-center space-x-2 text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-indigo-600 dark:bg-indigo-400 flex items-center justify-center text-white font-medium">
+                                    <div className="w-8 h-8 rounded-full bg-primary-500 dark:bg-primary-400 flex items-center justify-center text-white font-medium">
                                         {auth.user.name
                                             .slice(0, 2)
                                             .toUpperCase()}
@@ -401,19 +406,19 @@ export default function AdminLayout({ children, title }) {
                                     </span>
                                 </button>
                                 <div
-                                    className={`absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-600 ${
+                                    className={`absolute right-0 mt-2 w-48 bg-neutral-50 dark:bg-neutral-700 rounded-xl shadow-card py-1 z-50 border border-neutral-200 dark:border-neutral-600 ${
                                         profileOpen ? "" : "hidden"
                                     }`}
                                 >
                                     <a
                                         href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                        className="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"
                                     >
                                         Your Profile
                                     </a>
                                     <a
                                         href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                        className="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"
                                     >
                                         Settings
                                     </a>
@@ -421,7 +426,7 @@ export default function AdminLayout({ children, title }) {
                                         href={route("logout")}
                                         method="post"
                                         as="button"
-                                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                        className="block w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"
                                     >
                                         Log Out
                                     </Link>
@@ -430,7 +435,7 @@ export default function AdminLayout({ children, title }) {
                         </div>
                     </div>
                 </header>
-                <main className="flex-1 overflow-y-auto p-1 pt-3 bg-gray-50 dark:bg-gray-900">
+                <main className="flex-1 overflow-y-auto p-1 pt-3 bg-neutral-50 dark:bg-neutral-900">
                     {children}
                 </main>
             </div>

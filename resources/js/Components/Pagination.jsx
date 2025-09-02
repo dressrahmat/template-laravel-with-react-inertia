@@ -1,4 +1,3 @@
-// Components/Pagination.jsx
 import React from "react";
 import { Link } from "@inertiajs/react";
 
@@ -15,9 +14,9 @@ const Pagination = ({
         .replace("{total}", data.total || 0);
 
     return (
-        <div className="px-4 py-3 bg-gray-50 dark:bg-slate-700 border-t border-gray-200 dark:border-gray-600 sm:px-6">
+        <div className="px-4 py-3 bg-neutral-50 dark:bg-neutral-700 border-t border-neutral-200 dark:border-neutral-600 sm:px-6">
             <div className="flex flex-col sm:flex-row items-center justify-between">
-                <div className="text-sm text-gray-700 dark:text-gray-300 mb-4 sm:mb-0">
+                <div className="text-sm text-neutral-700 dark:text-neutral-300 mb-4 sm:mb-0">
                     {showingTextFormatted}
                 </div>
                 <div className="flex flex-wrap gap-1">
@@ -29,8 +28,8 @@ const Pagination = ({
                             preserveScroll
                             className={`relative inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md ${
                                 link.active
-                                    ? "z-10 bg-indigo-600 text-white focus:z-20 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    : "bg-white dark:bg-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-500 border border-gray-300 dark:border-gray-500"
+                                    ? "z-10 bg-primary-600 text-white focus:z-20 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    : "bg-neutral-50 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-500 border border-neutral-300 dark:border-neutral-500"
                             } ${
                                 !link.url ? "opacity-50 cursor-not-allowed" : ""
                             }`}

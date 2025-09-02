@@ -38,7 +38,7 @@ const Trigger = ({ children }) => {
 const Content = ({
     align = "right",
     width = "48",
-    contentClasses = "py-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg",
+    contentClasses = "py-1 bg-neutral-50 dark:bg-neutral-700 rounded-xl shadow-card",
     children,
 }) => {
     const { open, setOpen } = useContext(DropDownContext);
@@ -74,7 +74,7 @@ const Content = ({
                 >
                     <div
                         className={
-                            `rounded-lg ring-1 ring-black ring-opacity-5 shadow-xl ` +
+                            `rounded-xl ring-1 ring-neutral-900 ring-opacity-5 shadow-card ` +
                             contentClasses
                         }
                     >
@@ -91,7 +91,7 @@ const DropdownLink = ({ className = "", children, ...props }) => {
         <Link
             {...props}
             className={
-                "block w-full px-4 py-2.5 text-start text-sm text-gray-700 dark:text-gray-300 transition duration-150 ease-in-out hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 focus:outline-none rounded-md " +
+                "block w-full px-4 py-2.5 text-start text-sm text-neutral-700 dark:text-neutral-300 transition duration-150 ease-in-out hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:bg-neutral-50 dark:focus:bg-neutral-700 focus:outline-none rounded-md " +
                 className
             }
         >

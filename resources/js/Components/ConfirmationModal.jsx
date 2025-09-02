@@ -21,7 +21,7 @@ export default function ConfirmationModal({
                     aria-hidden="true"
                 >
                     <div
-                        className="absolute inset-0 bg-gray-500 opacity-75"
+                        className="absolute inset-0 bg-neutral-900 opacity-75"
                         onClick={onClose}
                     ></div>
                 </div>
@@ -33,12 +33,12 @@ export default function ConfirmationModal({
                     &#8203;
                 </span>
 
-                <div className="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div className="bg-white px-6 pt-6 pb-4">
+                <div className="inline-block align-bottom bg-neutral-50 rounded-xl text-left overflow-hidden shadow-card transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div className="bg-neutral-50 px-6 pt-6 pb-4">
                         <div className="sm:flex sm:items-start">
-                            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-error-100">
                                 <svg
-                                    className="h-6 w-6 text-red-600"
+                                    className="h-6 w-6 text-error-600"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -53,18 +53,18 @@ export default function ConfirmationModal({
                                 </svg>
                             </div>
                             <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900">
+                                <h3 className="text-lg leading-6 font-medium text-neutral-900">
                                     {title}
                                 </h3>
                                 <div className="mt-2">
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-neutral-600">
                                         {message}
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 rounded-b-xl">
+                    <div className="bg-neutral-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 rounded-b-xl">
                         <SecondaryButton
                             onClick={onClose}
                             className="w-full sm:w-auto mt-3 sm:mt-0"

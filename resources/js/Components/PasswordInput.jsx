@@ -31,7 +31,7 @@ export default function PasswordInput({
             />
             <button
                 type="button"
-                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors duration-200"
                 onClick={togglePasswordVisibility}
                 disabled={disabled}
             >

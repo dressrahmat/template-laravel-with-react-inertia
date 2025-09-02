@@ -8,9 +8,9 @@ export default function InputLabel({
     return (
         <label
             {...props}
-            className={`block font-semibold text-sm mb-1.5 text-gray-700 dark:text-gray-300 ${
+            className={`block font-semibold text-sm mb-1.5 text-neutral-700 dark:text-neutral-300 ${
                 required
-                    ? "after:content-['*'] after:ml-1 after:text-orange-600 after:dark:text-orange-400"
+                    ? "after:content-['*'] after:ml-1 after:text-warning-600 after:dark:text-warning-400"
                     : ""
             } ${className}`}
         >
