@@ -122,13 +122,13 @@ export default function CreateUser({ roles }) {
             <Head title="Create User" />
 
             <div className="mx-auto px-1 lg:px-4 lg:pt-4">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
+                <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl shadow-card p-6 sm:p-8">
                     {/* Header */}
                     <div className="mb-8">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
                             Create New User
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2">
+                        <p className="text-neutral-600 dark:text-neutral-400 mt-2">
                             Add a new user to your system with appropriate roles
                             and permissions.
                         </p>
@@ -142,7 +142,7 @@ export default function CreateUser({ roles }) {
                                 {/* Preview Area */}
                                 <div className="relative">
                                     <div
-                                        className="w-24 h-24 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 flex items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                                        className="w-24 h-24 rounded-full border-2 border-dashed border-neutral-300 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 flex items-center justify-center cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
                                         onClick={triggerFileInput}
                                     >
                                         {previewUrl ? (
@@ -158,15 +158,15 @@ export default function CreateUser({ roles }) {
                                                         e.stopPropagation();
                                                         removeImage();
                                                     }}
-                                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                                    className="absolute -top-2 -right-2 bg-error-500 text-white rounded-full p-1 hover:bg-error-600 transition-colors"
                                                 >
                                                     <FiX className="w-4 h-4" />
                                                 </button>
                                             </>
                                         ) : (
                                             <div className="text-center">
-                                                <FiCamera className="w-8 h-8 text-gray-400 mx-auto mb-1" />
-                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                <FiCamera className="w-8 h-8 text-neutral-400 mx-auto mb-1" />
+                                                <span className="text-xs text-neutral-500 dark:text-neutral-400">
                                                     Upload
                                                 </span>
                                             </div>
@@ -176,13 +176,13 @@ export default function CreateUser({ roles }) {
 
                                 {/* Upload Info */}
                                 <div className="flex-1">
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
                                         Upload a profile photo (max 2MB)
                                     </p>
                                     <button
                                         type="button"
                                         onClick={triggerFileInput}
-                                        className="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-800 text-sm"
+                                        className="inline-flex items-center px-4 py-2 bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-md font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-neutral-800 text-sm"
                                     >
                                         <FiCamera className="w-4 h-4 mr-2" />
                                         Select Photo
@@ -224,7 +224,7 @@ export default function CreateUser({ roles }) {
                                     className="pl-10"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiUser className="h-5 w-5 text-orange-400" />
+                                    <FiUser className="h-5 w-5 text-primary-400" />
                                 </div>
                             </div>
                             <InputError message={errors.name} />
@@ -250,7 +250,7 @@ export default function CreateUser({ roles }) {
                                     className="pl-10"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiMail className="h-5 w-5 text-orange-400" />
+                                    <FiMail className="h-5 w-5 text-primary-400" />
                                 </div>
                             </div>
                             <InputError message={errors.email} />
@@ -264,7 +264,7 @@ export default function CreateUser({ roles }) {
                                     roles.map((role) => (
                                         <label
                                             key={role}
-                                            className="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                            className="flex items-center p-3 border border-neutral-300 dark:border-neutral-600 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                                         >
                                             <input
                                                 type="checkbox"
@@ -275,9 +275,9 @@ export default function CreateUser({ roles }) {
                                                 onChange={() =>
                                                     handleRoleChange(role)
                                                 }
-                                                className="rounded border-gray-300 text-orange-600 shadow-sm focus:ring-orange-500"
+                                                className="rounded border-neutral-300 text-primary-600 shadow-sm focus:ring-primary-500"
                                             />
-                                            <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <span className="ml-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
                                                 {role}
                                             </span>
                                         </label>
@@ -327,17 +327,17 @@ export default function CreateUser({ roles }) {
                         </div>
 
                         {/* Form Actions */}
-                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-neutral-200 dark:border-neutral-700">
                             <Link
                                 href={route("admin.users.index")}
-                                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors duration-200 font-medium"
+                                className="inline-flex items-center justify-center px-6 py-3 border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700 transition-colors duration-200 font-medium"
                             >
                                 Cancel
                             </Link>
                             <PrimaryButton
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-3 bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
+                                className="px-6 py-3 bg-primary-600 hover:bg-primary-700 focus:ring-primary-500"
                             >
                                 {processing ? (
                                     <>

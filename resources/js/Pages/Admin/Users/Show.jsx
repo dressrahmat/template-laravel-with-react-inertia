@@ -73,12 +73,12 @@ export default function ShowUser({ user }) {
             />
 
             <div className="mx-auto px-1 lg:px-4 lg:pt-4">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl shadow-card overflow-hidden">
                     {/* Header dengan gradient dan tombol action */}
-                    <div className="bg-gradient-to-r from-orange-600 to-orange-700 px-6 py-5 text-white flex justify-between items-center">
+                    <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 text-white flex justify-between items-center">
                         <div>
                             <h2 className="text-2xl font-bold">User Details</h2>
-                            <p className="text-orange-100 opacity-90 mt-1">
+                            <p className="text-primary-100 opacity-90 mt-1">
                                 Detailed information about the user account and
                                 roles
                             </p>
@@ -89,7 +89,7 @@ export default function ShowUser({ user }) {
                             {/* Tombol Back to List - hanya tampil di desktop */}
                             <Link
                                 href={route("admin.users.index")}
-                                className="hidden md:inline-flex items-center justify-center px-4 py-2 bg-white/20 hover:bg-white/30 border border-white/30 rounded-lg text-white shadow-sm transition-all duration-200"
+                                className="hidden md:inline-flex items-center justify-center px-4 py-2 bg-neutral-50/20 hover:bg-neutral-50/30 border border-neutral-50/30 rounded-lg text-white shadow-sm transition-all duration-200"
                             >
                                 <svg
                                     className="w-4 h-4 mr-2"
@@ -111,7 +111,7 @@ export default function ShowUser({ user }) {
                             {/* Tombol Delete User */}
                             <DangerButton
                                 onClick={openDeleteModal}
-                                className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 focus:ring-orange-500"
+                                className="flex items-center px-4 py-2 bg-error-600 hover:bg-error-700 focus:ring-primary-500"
                             >
                                 <svg
                                     className="w-4 h-4 mr-2"
@@ -132,7 +132,7 @@ export default function ShowUser({ user }) {
 
                             {/* Tombol Edit User */}
                             <Link href={route("admin.users.edit", user.id)}>
-                                <PrimaryButton className="flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 focus:ring-orange-500">
+                                <PrimaryButton className="flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
                                     <svg
                                         className="w-4 h-4 mr-2"
                                         fill="none"
@@ -162,33 +162,33 @@ export default function ShowUser({ user }) {
                                         <img
                                             src={photoUrl}
                                             alt={user.name}
-                                            className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
+                                            className="w-32 h-32 rounded-full object-cover border-4 border-neutral-50 dark:border-neutral-700 shadow-lg"
                                         />
                                     ) : (
-                                        <div className="w-32 h-32 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center text-white font-bold text-4xl border-4 border-white dark:border-gray-700 shadow-lg">
+                                        <div className="w-32 h-32 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center text-white font-bold text-4xl border-4 border-neutral-50 dark:border-neutral-700 shadow-lg">
                                             {user.name.charAt(0).toUpperCase()}
                                         </div>
                                     )}
-                                    <div className="absolute bottom-0 right-0 bg-green-500 rounded-full p-1.5 border-2 border-white dark:border-gray-800">
-                                        <div className="w-4 h-4 rounded-full bg-green-400"></div>
+                                    <div className="absolute bottom-0 right-0 bg-success-500 rounded-full p-1.5 border-2 border-neutral-50 dark:border-neutral-800">
+                                        <div className="w-4 h-4 rounded-full bg-success-400"></div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Informasi User */}
                             <div className="flex-grow">
-                                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                                <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
                                     {user.name}
                                 </h1>
-                                <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
+                                <p className="text-lg text-neutral-600 dark:text-neutral-300 mb-4">
                                     {user.email}
                                 </p>
 
                                 <div className="flex flex-wrap gap-2">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-300">
                                         Active User
                                     </span>
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-300">
                                         Member since{" "}
                                         {new Date(
                                             user.created_at
@@ -200,36 +200,36 @@ export default function ShowUser({ user }) {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Card untuk informasi user */}
-                            <div className="bg-gray-50 dark:bg-gray-700/50 p-5 rounded-xl">
-                                <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-5 border-b border-gray-200 dark:border-gray-600 pb-3">
+                            <div className="bg-neutral-50 dark:bg-neutral-700/50 p-5 rounded-xl">
+                                <h3 className="font-semibold text-lg text-neutral-900 dark:text-white mb-5 border-b border-neutral-200 dark:border-neutral-600 pb-3">
                                     Personal Information
                                 </h3>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                        <label className="block text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">
                                             Full Name
                                         </label>
-                                        <p className="text-lg font-medium text-gray-900 dark:text-white">
+                                        <p className="text-lg font-medium text-neutral-900 dark:text-white">
                                             {user.name}
                                         </p>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                        <label className="block text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">
                                             Email Address
                                         </label>
-                                        <p className="text-lg font-medium text-gray-900 dark:text-white">
+                                        <p className="text-lg font-medium text-neutral-900 dark:text-white">
                                             {user.email}
                                         </p>
                                     </div>
 
                                     {user.phone && (
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                            <label className="block text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">
                                                 Phone Number
                                             </label>
-                                            <p className="text-lg font-medium text-gray-900 dark:text-white">
+                                            <p className="text-lg font-medium text-neutral-900 dark:text-white">
                                                 {user.phone}
                                             </p>
                                         </div>
@@ -238,26 +238,26 @@ export default function ShowUser({ user }) {
                             </div>
 
                             {/* Card untuk metadata user */}
-                            <div className="bg-gray-50 dark:bg-gray-700/50 p-5 rounded-xl">
-                                <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-5 border-b border-gray-200 dark:border-gray-600 pb-3">
+                            <div className="bg-neutral-50 dark:bg-neutral-700/50 p-5 rounded-xl">
+                                <h3 className="font-semibold text-lg text-neutral-900 dark:text-white mb-5 border-b border-neutral-200 dark:border-neutral-600 pb-3">
                                     Account Information
                                 </h3>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                        <label className="block text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">
                                             User ID
                                         </label>
-                                        <p className="text-lg font-medium text-gray-900 dark:text-white">
+                                        <p className="text-lg font-medium text-neutral-900 dark:text-white">
                                             #{user.id}
                                         </p>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                        <label className="block text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">
                                             Joined Date
                                         </label>
-                                        <p className="text-lg font-medium text-gray-900 dark:text-white">
+                                        <p className="text-lg font-medium text-neutral-900 dark:text-white">
                                             {new Date(
                                                 user.created_at
                                             ).toLocaleDateString("id-ID", {
@@ -269,10 +269,10 @@ export default function ShowUser({ user }) {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                        <label className="block text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">
                                             Last Updated
                                         </label>
-                                        <p className="text-lg font-medium text-gray-900 dark:text-white">
+                                        <p className="text-lg font-medium text-neutral-900 dark:text-white">
                                             {new Date(
                                                 user.updated_at
                                             ).toLocaleDateString("id-ID", {
@@ -284,10 +284,10 @@ export default function ShowUser({ user }) {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                        <label className="block text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">
                                             Account Status
                                         </label>
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200">
                                             Active
                                         </span>
                                     </div>
@@ -295,10 +295,10 @@ export default function ShowUser({ user }) {
                                     {/* Informasi Foto */}
                                     {user.foto_path && (
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                            <label className="block text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">
                                                 Profile Photo
                                             </label>
-                                            <p className="text-sm text-gray-900 dark:text-white break-all">
+                                            <p className="text-sm text-neutral-900 dark:text-white break-all">
                                                 {user.foto_path}
                                             </p>
                                         </div>
@@ -308,15 +308,15 @@ export default function ShowUser({ user }) {
 
                             {/* Card untuk roles */}
                             {user.roles && user.roles.length > 0 && (
-                                <div className="bg-gray-50 dark:bg-gray-700/50 p-5 rounded-xl md:col-span-2">
-                                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-5 border-b border-gray-200 dark:border-gray-600 pb-3">
+                                <div className="bg-neutral-50 dark:bg-neutral-700/50 p-5 rounded-xl md:col-span-2">
+                                    <h3 className="font-semibold text-lg text-neutral-900 dark:text-white mb-5 border-b border-neutral-200 dark:border-neutral-600 pb-3">
                                         User Roles
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {user.roles.map((role, index) => (
                                             <span
                                                 key={index}
-                                                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300"
+                                                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-300"
                                             >
                                                 {role.name}
                                             </span>
@@ -327,10 +327,10 @@ export default function ShowUser({ user }) {
                         </div>
 
                         {/* Tombol Back to List untuk mobile - di bagian bawah */}
-                        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 md:hidden">
+                        <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700 md:hidden">
                             <Link
                                 href={route("admin.users.index")}
-                                className="inline-flex items-center justify-center w-full px-6 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200"
+                                className="inline-flex items-center justify-center w-full px-6 py-3 bg-neutral-50 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xl text-neutral-700 dark:text-neutral-300 shadow-sm hover:bg-neutral-100 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200"
                             >
                                 <svg
                                     className="w-5 h-5 mr-2"

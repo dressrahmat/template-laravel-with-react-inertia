@@ -83,7 +83,7 @@ const PortalDropdown = ({ trigger, children, position = "bottom-right" }) => {
                         onClick={() => setIsOpen(false)}
                     >
                         <div
-                            className={`absolute mt-1 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-orange-500 ring-opacity-20 focus:outline-none ${getPositionClass()}`}
+                            className={`absolute mt-1 w-48 rounded-md shadow-lg bg-neutral-50 dark:bg-neutral-800 ring-1 ring-primary-500 ring-opacity-20 focus:outline-none ${getPositionClass()}`}
                             style={{
                                 top: positionData.top,
                                 left:
@@ -112,7 +112,7 @@ const PortalDropdown = ({ trigger, children, position = "bottom-right" }) => {
 // Komponen Dropdown Actions untuk setiap baris
 const RowActionsDropdown = ({ user, onView, onEdit, onDelete }) => {
     const trigger = (
-        <button className="inline-flex justify-center w-full p-2 text-sm font-medium text-orange-600 dark:text-orange-400 bg-white dark:bg-gray-800 rounded-md hover:bg-orange-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+        <button className="inline-flex justify-center w-full p-2 text-sm font-medium text-primary-600 dark:text-primary-400 bg-neutral-50 dark:bg-neutral-800 rounded-md hover:bg-primary-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <FiMoreVertical className="h-4 w-4" aria-hidden="true" />
         </button>
     );
@@ -122,21 +122,21 @@ const RowActionsDropdown = ({ user, onView, onEdit, onDelete }) => {
             <div className="py-1">
                 <button
                     onClick={onView}
-                    className="group flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700 hover:text-orange-600 dark:hover:text-orange-400"
+                    className="group flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400"
                 >
                     <FiEye className="mr-3 h-4 w-4" aria-hidden="true" />
                     View
                 </button>
                 <button
                     onClick={onEdit}
-                    className="group flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700 hover:text-orange-600 dark:hover:text-orange-400"
+                    className="group flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400"
                 >
                     <FiEdit className="mr-3 h-4 w-4" aria-hidden="true" />
                     Edit
                 </button>
                 <button
                     onClick={onDelete}
-                    className="group flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-700 dark:hover:text-red-300"
+                    className="group flex items-center w-full px-4 py-2 text-sm text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/30 hover:text-error-700 dark:hover:text-error-300"
                 >
                     <FiTrash2 className="mr-3 h-4 w-4" aria-hidden="true" />
                     Delete
@@ -464,14 +464,14 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                 render: (user) => (
                     <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                            <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-                                <span className="font-medium text-orange-800 dark:text-orange-200">
+                            <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                                <span className="font-medium text-primary-800 dark:text-primary-200">
                                     {user.name.charAt(0).toUpperCase()}
                                 </span>
                             </div>
                         </div>
                         <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            <div className="text-sm font-medium text-neutral-900 dark:text-white">
                                 {user.name}
                             </div>
                         </div>
@@ -485,7 +485,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                 onSort: () => handleSort("email"),
                 sortIcon: getSortIcon("email"),
                 render: (user) => (
-                    <div className="text-sm text-gray-900 dark:text-white">
+                    <div className="text-sm text-neutral-900 dark:text-white">
                         {user.email}
                     </div>
                 ),
@@ -499,7 +499,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                             user.roles.map((role, index) => (
                                 <span
                                     key={index}
-                                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300"
+                                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-300"
                                 >
                                     {role.name}
                                 </span>
@@ -514,7 +514,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                 onSort: () => handleSort("created_at"),
                 sortIcon: getSortIcon("created_at"),
                 render: (user) => (
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         {new Date(user.created_at).toLocaleDateString("id-ID", {
                             year: "numeric",
                             month: "short",
@@ -529,7 +529,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
 
     const emptyState = useMemo(
         () => (
-            <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
+            <div className="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500">
                 <FiUserPlus className="h-12 w-12 mb-3 opacity-50" />
                 <p className="text-lg font-medium">No users found</p>
                 <p className="mt-1 text-sm">
@@ -537,7 +537,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                 </p>
                 <div className="mt-6">
                     <Link href={route("admin.users.create")}>
-                        <PrimaryButton className="flex items-center bg-orange-600 hover:bg-orange-700 focus:ring-orange-500">
+                        <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
                             <FiPlus className="mr-2 h-5 w-5" />
                             Add New User
                         </PrimaryButton>
@@ -563,7 +563,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
     const createButton = useMemo(
         () => (
             <Link href={route("admin.users.create")}>
-                <PrimaryButton className="flex items-center bg-orange-600 hover:bg-orange-700 focus:ring-orange-500">
+                <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
                     <FiUserPlus className="mr-2 h-5 w-5" />
                     Add User
                 </PrimaryButton>
@@ -613,11 +613,11 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                 }
             >
                 {flash.success && (
-                    <div className="mb-8 bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-md p-4">
+                    <div className="mb-8 bg-success-50 dark:bg-success-900/30 border border-success-200 dark:border-success-800 rounded-md p-4">
                         <div className="flex">
                             <div className="flex-shrink-0">
                                 <svg
-                                    className="h-5 w-5 text-orange-400"
+                                    className="h-5 w-5 text-success-400"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
@@ -630,7 +630,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                                 </svg>
                             </div>
                             <div className="ml-3">
-                                <p className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                                <p className="text-sm font-medium text-success-800 dark:text-success-200">
                                     {flash.success}
                                 </p>
                             </div>
@@ -639,11 +639,11 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                 )}
 
                 {flash.error && (
-                    <div className="mb-8 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md p-4">
+                    <div className="mb-8 bg-error-50 dark:bg-error-900/30 border border-error-200 dark:border-error-800 rounded-md p-4">
                         <div className="flex">
                             <div className="flex-shrink-0">
                                 <svg
-                                    className="h-5 w-5 text-red-400"
+                                    className="h-5 w-5 text-error-400"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
@@ -656,7 +656,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                                 </svg>
                             </div>
                             <div className="ml-3">
-                                <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                                <p className="text-sm font-medium text-error-800 dark:text-error-200">
                                     {flash.error}
                                 </p>
                             </div>
