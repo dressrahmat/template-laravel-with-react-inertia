@@ -14,6 +14,21 @@ use App\Http\Controllers\Admin\RolePermissionController;
 // Route untuk frontend (publik)
 Route::get('/', [BerandaController::class, 'index'])->name('welcome');
 
+// Route untuk menangani semua rute yang tidak terdaftar (404)
+Route::fallback(function () {
+    return Inertia::render('Admin/Errors/404', [
+        'auth' => [
+            'user' => auth()->check() ? [
+                'id' => auth()->user()->id,
+                'name' => auth()->user()->name,
+                'email' => auth()->user()->email,                
+                'roles' => auth()->user()->getRoleNames()->toArray(),
+                'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
+            ] : null
+        ]
+    ]);
+})->name('fallback');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
