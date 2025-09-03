@@ -18,7 +18,7 @@ const NotFound = ({ auth }) => {
 
     return (
         <AdminLayout title="Halaman Tidak Ditemukan">
-            <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4">
+            <div className="flex items-center justify-center h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4">
                 <div className="text-center">
                     <h1 className="text-9xl font-extrabold text-gray-700 dark:text-gray-300 tracking-widest">
                         404
