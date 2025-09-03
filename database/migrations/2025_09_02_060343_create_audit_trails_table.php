@@ -18,13 +18,13 @@ return new class extends Migration
             $table->string('user_agent')->nullable();
             $table->text('url')->nullable();
             $table->text('description')->nullable();
-            
+
             // Foreign key ke user
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('affected_user_id')->nullable()->constrained('users')->onDelete('set null');
-            
+
             $table->timestamps();
-            
+
             // Index untuk performa query
             $table->index(['event', 'table_name']);
             $table->index('created_at');

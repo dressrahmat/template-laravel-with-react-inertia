@@ -45,7 +45,7 @@ trait Auditable
     protected static function getDescription($model, $event)
     {
         $modelName = class_basename($model);
-        
+
         $descriptions = [
             'created' => "{$modelName} baru dibuat",
             'updated' => "{$modelName} diperbarui",

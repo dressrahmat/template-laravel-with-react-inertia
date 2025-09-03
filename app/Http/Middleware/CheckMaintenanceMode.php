@@ -11,9 +11,9 @@ class CheckMaintenanceMode
     public function handle(Request $request, Closure $next)
     {
         $settings = Setting::first();
-        
+
         // Jika maintenance mode aktif dan user bukan admin
-        if ($settings && $settings->maintenance_mode && !$this->isAdmin($request)) {
+        if ($settings && $settings->maintenance_mode && ! $this->isAdmin($request)) {
             return redirect()->route('front.maintenance');
         }
 

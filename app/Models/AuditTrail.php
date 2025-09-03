@@ -53,10 +53,10 @@ class AuditTrail extends Model
      * @var array
      */
     protected $appends = [
-        'message', 
-        'created_at_human', 
-        'action_color', 
-        'table_display_name'
+        'message',
+        'created_at_human',
+        'action_color',
+        'table_display_name',
     ];
 
     /**
@@ -89,23 +89,23 @@ class AuditTrail extends Model
     public function getMessageAttribute(): string
     {
         $userName = $this->user ? $this->user->name : 'Sistem';
-        
+
         switch ($this->event) {
             case 'login':
                 return "{$userName} melakukan login ke sistem";
-            
+
             case 'logout':
                 return "{$userName} melakukan logout dari sistem";
-            
+
             case 'created':
                 return "{$userName} menambahkan data {$this->table_display_name} baru";
-            
+
             case 'updated':
                 return "{$userName} memperbarui data {$this->table_display_name}";
-            
+
             case 'deleted':
                 return "{$userName} menghapus data {$this->table_display_name}";
-            
+
             default:
                 return "{$userName} melakukan aktivitas sistem";
         }
@@ -122,6 +122,7 @@ class AuditTrail extends Model
             'permissions' => 'Permissions',
             'audit_trails' => 'Audit Trail',
         ];
+
         return $tableNames[$this->table_name] ?? ucwords(str_replace('_', ' ', $this->table_name));
     }
 
@@ -130,7 +131,7 @@ class AuditTrail extends Model
      */
     public function getActionColorAttribute(): string
     {
-        return match($this->event) {
+        return match ($this->event) {
             'login' => 'success',
             'logout' => 'warning',
             'created' => 'info',

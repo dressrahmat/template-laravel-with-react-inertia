@@ -1,0 +1,1 @@
+import{j as l}from"./app-Cvucz7kI.js";function o({value:t,className:e="",children:r,required:a=!1,...n}){return l.jsx("label",{...n,className:`block font-semibold text-sm mb-1.5 text-neutral-700 dark:text-neutral-300 ${a?"after:content-['*'] after:ml-1 after:text-warning-600 after:dark:text-warning-400":""} ${e}`,children:t||r})}export{o as I};

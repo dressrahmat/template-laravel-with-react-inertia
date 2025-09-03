@@ -508,12 +508,12 @@ export default function AdminLayout({ children, title }) {
                                         profileOpen ? "" : "hidden"
                                     }`}
                                 >
-                                    <a
-                                        href="#"
+                                    <Link
+                                        href={route("profile.edit")}
                                         className="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"
                                     >
                                         Profil Anda
-                                    </a>
+                                    </Link>
                                     <Link
                                         href={route("admin.settings.index")}
                                         className="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600"

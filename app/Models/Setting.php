@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Traits\Auditable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-    use HasFactory, Auditable;
+    use Auditable, HasFactory;
 
     protected $table = 'setting';
 
@@ -41,9 +41,9 @@ class Setting extends Model
         'body_scripts',
         'footer_scripts',
         'maintenance_mode',
-        'maintenance_message'
+        'maintenance_message',
     ];
-    
+
     /**
      * Get the first website settings (singleton pattern)
      */

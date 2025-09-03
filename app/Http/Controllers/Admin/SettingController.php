@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Setting;
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class SettingController extends Controller
 {
@@ -18,9 +18,9 @@ class SettingController extends Controller
 
         // Ambil pengaturan website
         $settings = Setting::first();
-        
+
         // Jika belum ada data, buat data default
-        if (!$settings) {
+        if (! $settings) {
             $settings = Setting::create([
                 'site_name' => 'Nama Website',
                 'site_description' => 'Deskripsi Website',
@@ -72,13 +72,12 @@ class SettingController extends Controller
             'maintenance_message' => 'nullable|string',
         ]);
 
-        
         if ($validator->fails()) {
             return redirect()->back()
-            ->withErrors($validator)
-            ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
-        
+
         $data = $request->except(['site_logo', 'site_favicon', 'og_image']);
 
         // Handle site logo upload
@@ -105,12 +104,12 @@ class SettingController extends Controller
 
         try {
             $settings->update($data);
-            
+
             return redirect()->route('admin.settings.index')
                 ->with('success', 'Pengaturan berhasil diperbarui.');
-                
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memperbarui pengaturan: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui pengaturan: '.$e->getMessage());
         }
     }
 
@@ -123,13 +122,13 @@ class SettingController extends Controller
         if ($settings->site_logo && Storage::disk('public')->exists($settings->site_logo)) {
             Storage::disk('public')->delete($settings->site_logo);
         }
-        
+
         // Generate unique filename for logo
-        $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
-        
+        $filename = 'logo_'.time().'.'.$file->getClientOriginalExtension();
+
         // Store in settings directory
         $path = $file->storeAs('settings', $filename, 'public');
-        
+
         return $path;
     }
 
@@ -142,13 +141,13 @@ class SettingController extends Controller
         if ($settings->site_favicon && Storage::disk('public')->exists($settings->site_favicon)) {
             Storage::disk('public')->delete($settings->site_favicon);
         }
-        
+
         // Generate unique filename for favicon
-        $filename = 'favicon_' . time() . '.' . $file->getClientOriginalExtension();
-        
+        $filename = 'favicon_'.time().'.'.$file->getClientOriginalExtension();
+
         // Store in settings directory
         $path = $file->storeAs('settings', $filename, 'public');
-        
+
         return $path;
     }
 
@@ -161,28 +160,28 @@ class SettingController extends Controller
         if ($settings->og_image && Storage::disk('public')->exists($settings->og_image)) {
             Storage::disk('public')->delete($settings->og_image);
         }
-        
+
         // Generate unique filename for OG image
-        $filename = 'og_image_' . time() . '.' . $file->getClientOriginalExtension();
-        
+        $filename = 'og_image_'.time().'.'.$file->getClientOriginalExtension();
+
         // Store in settings directory
         $path = $file->storeAs('settings', $filename, 'public');
-        
+
         return $path;
     }
 
     public function removeImage(Request $request, $type)
     {
         $settings = Setting::first();
-        
-        if (!$settings) {
+
+        if (! $settings) {
             return back()->with('error', 'Pengaturan tidak ditemukan.');
         }
 
         try {
             $field = '';
             $message = '';
-            
+
             switch ($type) {
                 case 'logo':
                     $field = 'site_logo';
@@ -204,22 +203,22 @@ class SettingController extends Controller
             if ($settings->$field && Storage::disk('public')->exists($settings->$field)) {
                 Storage::disk('public')->delete($settings->$field);
             }
-            
+
             // Update settings record
             $settings->update([$field => null]);
 
             return back()->with('success', $message);
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus gambar: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus gambar: '.$e->getMessage());
         }
     }
 
     public function getScripts($type)
     {
         $settings = Setting::first();
-        
-        if (!$settings) {
+
+        if (! $settings) {
             return response('', 200);
         }
 
@@ -241,24 +240,24 @@ class SettingController extends Controller
     public function uploadLogoOnly(Request $request)
     {
         $request->validate([
-            'site_logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'site_logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $settings = Setting::firstOrCreate([]);
-        
+
         try {
             $path = $this->uploadLogo($request->file('site_logo'), $settings);
             $settings->update(['site_logo' => $path]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Logo berhasil diupload',
-                'path' => Storage::url($path)
+                'path' => Storage::url($path),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal upload logo: ' . $e->getMessage()
+                'message' => 'Gagal upload logo: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -269,24 +268,24 @@ class SettingController extends Controller
     public function uploadFaviconOnly(Request $request)
     {
         $request->validate([
-            'site_favicon' => 'required|image|mimes:ico,png|max:1024'
+            'site_favicon' => 'required|image|mimes:ico,png|max:1024',
         ]);
 
         $settings = Setting::firstOrCreate([]);
-        
+
         try {
             $path = $this->uploadFavicon($request->file('site_favicon'), $settings);
             $settings->update(['site_favicon' => $path]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Favicon berhasil diupload',
-                'path' => Storage::url($path)
+                'path' => Storage::url($path),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal upload favicon: ' . $e->getMessage()
+                'message' => 'Gagal upload favicon: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -297,24 +296,24 @@ class SettingController extends Controller
     public function uploadOgImageOnly(Request $request)
     {
         $request->validate([
-            'og_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'og_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $settings = Setting::firstOrCreate([]);
-        
+
         try {
             $path = $this->uploadOgImage($request->file('og_image'), $settings);
             $settings->update(['og_image' => $path]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'OG Image berhasil diupload',
-                'path' => Storage::url($path)
+                'path' => Storage::url($path),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal upload OG Image: ' . $e->getMessage()
+                'message' => 'Gagal upload OG Image: '.$e->getMessage(),
             ], 500);
         }
     }

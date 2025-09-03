@@ -3,10 +3,10 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Inertia\Inertia;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Spatie\Permission\Exceptions\UnauthorizedException;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -43,11 +43,11 @@ return Application::configure(basePath: dirname(__DIR__))
                     'user' => auth()->check() ? [
                         'id' => auth()->user()->id,
                         'name' => auth()->user()->name,
-                        'email' => auth()->user()->email,                
+                        'email' => auth()->user()->email,
                         'roles' => auth()->user()->getRoleNames()->toArray(),
                         'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
-                    ] : null
-                ]
+                    ] : null,
+                ],
             ]);
 
             return $inertiaResponse->toResponse($request)->setStatusCode(403);
@@ -67,11 +67,11 @@ return Application::configure(basePath: dirname(__DIR__))
                         'user' => auth()->check() ? [
                             'id' => auth()->user()->id,
                             'name' => auth()->user()->name,
-                            'email' => auth()->user()->email,                
+                            'email' => auth()->user()->email,
                             'roles' => auth()->user()->getRoleNames()->toArray(),
                             'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
-                        ] : null
-                    ]
+                        ] : null,
+                    ],
                 ]);
 
                 return $inertiaResponse->toResponse($request)->setStatusCode(403);
@@ -92,11 +92,11 @@ return Application::configure(basePath: dirname(__DIR__))
                         'user' => auth()->check() ? [
                             'id' => auth()->user()->id,
                             'name' => auth()->user()->name,
-                            'email' => auth()->user()->email,                
+                            'email' => auth()->user()->email,
                             'roles' => auth()->user()->getRoleNames()->toArray(),
                             'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
-                        ] : null
-                    ]
+                        ] : null,
+                    ],
                 ]);
 
                 return $inertiaResponse->toResponse($request)->setStatusCode(404);

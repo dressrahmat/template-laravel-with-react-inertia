@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditTrail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
-use Illuminate\Database\Eloquent\Builder;
 
 class AuditTrailController extends Controller
 {
@@ -16,7 +16,7 @@ class AuditTrailController extends Controller
      */
     public function index(Request $request)
     {
-        if (!Gate::allows('view audit trail')) {
+        if (! Gate::allows('view audit trail')) {
             abort(403, 'Anda tidak memiliki izin untuk melihat audit trail.');
         }
 
@@ -31,16 +31,16 @@ class AuditTrailController extends Controller
         $perPage = $request->query('per_page', 10);
 
         $validPerPage = [5, 10, 15, 20, 50];
-        if (!in_array($perPage, $validPerPage)) {
+        if (! in_array($perPage, $validPerPage)) {
             $perPage = 10;
         }
 
-        if (!in_array($direction, ['asc', 'desc'])) {
+        if (! in_array($direction, ['asc', 'desc'])) {
             $direction = 'desc';
         }
 
         $validSortColumns = ['created_at', 'table_name', 'event'];
-        if (!in_array($sort, $validSortColumns)) {
+        if (! in_array($sort, $validSortColumns)) {
             $sort = 'created_at';
         }
 
@@ -117,7 +117,7 @@ class AuditTrailController extends Controller
     {
         $authUser = auth()->user();
 
-        if (!Gate::allows('view audit trail') && !$authUser->can('view audit trail '.$auditTrail->table_name)) {
+        if (! Gate::allows('view audit trail') && ! $authUser->can('view audit trail '.$auditTrail->table_name)) {
             abort(403, 'Anda tidak memiliki izin untuk melihat audit trail dari tabel ini.');
         }
 
@@ -170,7 +170,7 @@ class AuditTrailController extends Controller
      */
     public function cleanup(Request $request)
     {
-        if (!Gate::allows('manage audit trail')) {
+        if (! Gate::allows('manage audit trail')) {
             abort(403, 'Anda tidak memiliki izin untuk mengelola audit trail.');
         }
 
@@ -186,7 +186,7 @@ class AuditTrailController extends Controller
      */
     public function export(Request $request)
     {
-        if (!Gate::allows('manage audit trail')) {
+        if (! Gate::allows('manage audit trail')) {
             abort(403, 'Anda tidak memiliki izin untuk mengelola audit trail.');
         }
 
@@ -273,18 +273,18 @@ class AuditTrailController extends Controller
                 'roles' => 'view audit trail roles',
                 'permissions' => 'view audit trail permissions',
             ];
-            
+
             $allowedTables = [];
             foreach ($permissions as $table => $permission) {
                 if ($authUser->can($permission)) {
                     $allowedTables[] = $table;
                 }
             }
-            
+
             if ($authUser->hasRole('master') || $authUser->can('view all audit trail')) {
                 // Jika memiliki akses master, tidak perlu filter
                 $q->orWhereRaw('1=1');
-            } else if (!empty($allowedTables)) {
+            } elseif (! empty($allowedTables)) {
                 $q->whereIn('table_name', $allowedTables);
             } else {
                 // Jika tidak memiliki izin sama sekali, tidak tampilkan data

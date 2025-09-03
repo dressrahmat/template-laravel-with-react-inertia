@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 class BerandaController extends Controller
 {
@@ -14,9 +14,9 @@ class BerandaController extends Controller
     {
         // Ambil pengaturan website
         $settings = Setting::first();
-        
+
         // Jika belum ada data, buat data default
-        if (!$settings) {
+        if (! $settings) {
             $settings = Setting::create([
                 'site_name' => 'Nama Website',
                 'site_description' => 'Deskripsi Website',
@@ -29,7 +29,7 @@ class BerandaController extends Controller
             'description' => $settings->site_description,
             'keywords' => $settings->meta_keywords,
             'author' => $settings->meta_author,
-            'og_image' => $settings->og_image ? asset('storage/' . $settings->og_image) : null,
+            'og_image' => $settings->og_image ? asset('storage/'.$settings->og_image) : null,
         ];
 
         return Inertia::render('Welcome', [
@@ -45,13 +45,13 @@ class BerandaController extends Controller
     public function tentang()
     {
         $settings = Setting::first();
-        
+
         $metaTags = [
-            'title' => 'Tentang Kami - ' . ($settings->site_name ?? 'Website'),
+            'title' => 'Tentang Kami - '.($settings->site_name ?? 'Website'),
             'description' => 'Tentang kami dan visi misi perusahaan',
             'keywords' => $settings->meta_keywords ?? '',
             'author' => $settings->meta_author ?? '',
-            'og_image' => $settings->og_image ? asset('storage/' . $settings->og_image) : null,
+            'og_image' => $settings->og_image ? asset('storage/'.$settings->og_image) : null,
         ];
 
         return Inertia::render('Front/Beranda/Tentang', [
@@ -63,13 +63,13 @@ class BerandaController extends Controller
     public function kontak()
     {
         $settings = Setting::first();
-        
+
         $metaTags = [
-            'title' => 'Kontak - ' . ($settings->site_name ?? 'Website'),
+            'title' => 'Kontak - '.($settings->site_name ?? 'Website'),
             'description' => 'Hubungi kami untuk informasi lebih lanjut',
             'keywords' => $settings->meta_keywords ?? '',
             'author' => $settings->meta_author ?? '',
-            'og_image' => $settings->og_image ? asset('storage/' . $settings->og_image) : null,
+            'og_image' => $settings->og_image ? asset('storage/'.$settings->og_image) : null,
         ];
 
         return Inertia::render('Front/Beranda/Kontak', [
@@ -81,9 +81,9 @@ class BerandaController extends Controller
     public function maintenance()
     {
         $settings = Setting::first();
-        
+
         // Jika maintenance mode tidak aktif, redirect ke home
-        if (!$settings->maintenance_mode) {
+        if (! $settings->maintenance_mode) {
             return redirect()->route('welcome');
         }
 

@@ -2,11 +2,10 @@
 
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Front\BerandaController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Front\BerandaController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\Admin\RolePermissionController;
@@ -20,17 +19,17 @@ Route::fallback(function (Request $request) {
     if (auth()->check()) {
         // Cek jika ini seharusnya menjadi 403
         $path = $request->path();
-        if (str_starts_with($path, 'admin') && !auth()->user()->hasPermissionTo('access admin panel')) {
+        if (str_starts_with($path, 'admin') && ! auth()->user()->hasPermissionTo('access admin panel')) {
             $inertiaResponse = Inertia::render('Admin/Errors/403', [
                 'auth' => [
                     'user' => [
                         'id' => auth()->user()->id,
                         'name' => auth()->user()->name,
-                        'email' => auth()->user()->email,                
+                        'email' => auth()->user()->email,
                         'roles' => auth()->user()->getRoleNames()->toArray(),
                         'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
             return $inertiaResponse->toResponse($request)->setStatusCode(403);
@@ -43,22 +42,21 @@ Route::fallback(function (Request $request) {
             'user' => auth()->check() ? [
                 'id' => auth()->user()->id,
                 'name' => auth()->user()->name,
-                'email' => auth()->user()->email,                
+                'email' => auth()->user()->email,
                 'roles' => auth()->user()->getRoleNames()->toArray(),
                 'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
-            ] : null
-        ]
+            ] : null,
+        ],
     ]);
 
     return $inertiaResponse->toResponse($request)->setStatusCode(404);
 })->name('fallback');
 
-
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->middleware(['permission:view dashboard'])
         ->name('dashboard');
-        
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -107,7 +105,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
             Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
             Route::delete('/settings/images/{type}', [SettingController::class, 'removeImage'])->name('settings.removeImage');
-            
+
             // Route khusus untuk upload file individual
             Route::post('/settings/upload-logo', [SettingController::class, 'uploadLogoOnly'])->name('settings.upload-logo');
             Route::post('/settings/upload-favicon', [SettingController::class, 'uploadFaviconOnly'])->name('settings.upload-favicon');

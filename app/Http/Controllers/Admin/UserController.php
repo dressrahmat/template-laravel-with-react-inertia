@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\User;
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -169,7 +168,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -185,19 +184,19 @@ class UserController extends Controller
         try {
             // Simpan roles lama untuk audit
             $oldRoles = $user->getRoleNames()->toArray();
-            
+
             $user->update($data);
             // Sync roles
             if ($request->has('roles')) {
                 $user->syncRoles($request->roles);
             }
-            
+
             return redirect()->route('admin.users.index')
                 ->with('success', 'User updated successfully.');
-                
+
         } catch (\Exception $e) {
-            
-            return back()->with('error', 'Failed to update user: ' . $e->getMessage());
+
+            return back()->with('error', 'Failed to update user: '.$e->getMessage());
         }
     }
 
@@ -212,17 +211,17 @@ class UserController extends Controller
             if ($user->foto_path && Storage::disk('public')->exists($user->foto_path)) {
                 Storage::disk('public')->delete($user->foto_path);
             }
-            
+
             // Store new photo - MIRIP DENGAN STORE
             $path = $request->file('foto')->store('user-photos', 'public');
-            
+
             // Update user
             $user->update(['foto_path' => $path]);
 
             return back()->with('success', 'Profile photo updated successfully.');
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to update foto user: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update foto user: '.$e->getMessage());
         }
     }
 
@@ -234,14 +233,14 @@ class UserController extends Controller
             if ($user->foto_path && Storage::disk('public')->exists($user->foto_path)) {
                 Storage::disk('public')->delete($user->foto_path);
             }
-            
+
             // Update user record
             $user->update(['foto_path' => null]);
 
             return back()->with('success', 'Profile photo removed successfully.');
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to remove photo: ' . $e->getMessage());
+            return back()->with('error', 'Failed to remove photo: '.$e->getMessage());
         }
     }
 
@@ -260,7 +259,7 @@ class UserController extends Controller
     {
         $request->validate([
             'ids' => 'required|array',
-            'ids.*' => 'exists:users,id'
+            'ids.*' => 'exists:users,id',
         ]);
 
         User::whereIn('id', $request->ids)->delete();
@@ -276,10 +275,10 @@ class UserController extends Controller
     {
         $request->validate([
             'ids' => 'nullable|array',
-            'ids.*' => 'exists:users,id'
+            'ids.*' => 'exists:users,id',
         ]);
 
-        $users = $request->has('ids') 
+        $users = $request->has('ids')
             ? User::whereIn('id', $request->ids)->get()
             : User::all();
 
@@ -287,7 +286,7 @@ class UserController extends Controller
         // Bisa dikembangkan menjadi CSV/Excel export
         return response()->json([
             'users' => $users,
-            'message' => 'Export functionality can be implemented further'
+            'message' => 'Export functionality can be implemented further',
         ]);
     }
 
@@ -300,7 +299,7 @@ class UserController extends Controller
             'ids' => 'required|array',
             'ids.*' => 'exists:users,id',
             'field' => 'required|string|in:status,role', // contoh field yang bisa diupdate
-            'value' => 'required' // nilai baru
+            'value' => 'required', // nilai baru
         ]);
 
         User::whereIn('id', $request->ids)

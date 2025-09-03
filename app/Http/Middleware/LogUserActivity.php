@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\AuditTrail;
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\AuditTrail;
 use Illuminate\Support\Facades\Auth;
 
 class LogUserActivity

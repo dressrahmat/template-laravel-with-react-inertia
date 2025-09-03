@@ -31,7 +31,7 @@ class RolePermissionSeeder extends Seeder
             'create permissions',
             'edit permissions',
             'delete permissions',
-            
+
             // Permission baru untuk manage settings
             'manage settings',
             'view settings',
