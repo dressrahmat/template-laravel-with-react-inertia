@@ -15,8 +15,30 @@ use App\Http\Controllers\Admin\RolePermissionController;
 Route::get('/', [BerandaController::class, 'index'])->name('welcome');
 
 // Route untuk menangani semua rute yang tidak terdaftar (404)
-Route::fallback(function () {
-    return Inertia::render('Admin/Errors/404', [
+Route::fallback(function (Request $request) {
+    // Jika user terautentikasi tapi tidak memiliki akses
+    if (auth()->check()) {
+        // Cek jika ini seharusnya menjadi 403
+        $path = $request->path();
+        if (str_starts_with($path, 'admin') && !auth()->user()->hasPermissionTo('access admin panel')) {
+            $inertiaResponse = Inertia::render('Admin/Errors/403', [
+                'auth' => [
+                    'user' => [
+                        'id' => auth()->user()->id,
+                        'name' => auth()->user()->name,
+                        'email' => auth()->user()->email,                
+                        'roles' => auth()->user()->getRoleNames()->toArray(),
+                        'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
+                    ]
+                ]
+            ]);
+
+            return $inertiaResponse->toResponse($request)->setStatusCode(403);
+        }
+    }
+
+    // Default ke 404
+    $inertiaResponse = Inertia::render('Admin/Errors/404', [
         'auth' => [
             'user' => auth()->check() ? [
                 'id' => auth()->user()->id,
@@ -27,6 +49,8 @@ Route::fallback(function () {
             ] : null
         ]
     ]);
+
+    return $inertiaResponse->toResponse($request)->setStatusCode(404);
 })->name('fallback');
 
 

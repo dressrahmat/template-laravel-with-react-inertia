@@ -3,6 +3,10 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Inertia\Inertia;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,8 +27,79 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.maintenance' => \App\Http\Middleware\CheckMaintenanceMode::class,
         ]);
 
-        $middleware->append(\App\Http\Middleware\LogUserActivity::class,);
+        $middleware->append(\App\Http\Middleware\LogUserActivity::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Handle UnauthorizedException dari Spatie
+        $exceptions->renderable(function (UnauthorizedException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'You do not have the required authorization.',
+                ], 403);
+            }
+
+            $inertiaResponse = Inertia::render('Admin/Errors/403', [
+                'auth' => [
+                    'user' => auth()->check() ? [
+                        'id' => auth()->user()->id,
+                        'name' => auth()->user()->name,
+                        'email' => auth()->user()->email,                
+                        'roles' => auth()->user()->getRoleNames()->toArray(),
+                        'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
+                    ] : null
+                ]
+            ]);
+
+            return $inertiaResponse->toResponse($request)->setStatusCode(403);
+        });
+
+        // Handle HttpException 403 umum
+        $exceptions->renderable(function (HttpException $e, Request $request) {
+            if ($e->getStatusCode() === 403) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => 'Forbidden.',
+                    ], 403);
+                }
+
+                $inertiaResponse = Inertia::render('Admin/Errors/403', [
+                    'auth' => [
+                        'user' => auth()->check() ? [
+                            'id' => auth()->user()->id,
+                            'name' => auth()->user()->name,
+                            'email' => auth()->user()->email,                
+                            'roles' => auth()->user()->getRoleNames()->toArray(),
+                            'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
+                        ] : null
+                    ]
+                ]);
+
+                return $inertiaResponse->toResponse($request)->setStatusCode(403);
+            }
+        });
+
+        // Handler untuk 404
+        $exceptions->renderable(function (HttpException $e, Request $request) {
+            if ($e->getStatusCode() === 404) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => 'Page not found.',
+                    ], 404);
+                }
+
+                $inertiaResponse = Inertia::render('Admin/Errors/404', [
+                    'auth' => [
+                        'user' => auth()->check() ? [
+                            'id' => auth()->user()->id,
+                            'name' => auth()->user()->name,
+                            'email' => auth()->user()->email,                
+                            'roles' => auth()->user()->getRoleNames()->toArray(),
+                            'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
+                        ] : null
+                    ]
+                ]);
+
+                return $inertiaResponse->toResponse($request)->setStatusCode(404);
+            }
+        });
     })->create();
