@@ -30,8 +30,6 @@ import {
     FiShield,
     FiKey,
 } from "react-icons/fi";
-import { Menu, Transition } from "@headlessui/react";
-import { Fragment } from "react";
 import { createPortal } from "react-dom";
 
 const PortalDropdown = ({ trigger, children, position = "bottom-right" }) => {
@@ -109,7 +107,14 @@ const PortalDropdown = ({ trigger, children, position = "bottom-right" }) => {
     );
 };
 
-const RowActionsDropdown = ({ item, type, onEdit, onDelete }) => {
+const RowActionsDropdown = ({
+    item,
+    type,
+    onEdit,
+    onDelete,
+    hasEditPermission,
+    hasDeletePermission,
+}) => {
     const trigger = (
         <button className="inline-flex justify-center w-full p-2 text-sm font-medium text-primary-600 dark:text-primary-400 bg-neutral-50 dark:bg-neutral-800 rounded-md hover:bg-primary-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <FiMoreVertical className="h-4 w-4" aria-hidden="true" />
@@ -119,20 +124,24 @@ const RowActionsDropdown = ({ item, type, onEdit, onDelete }) => {
     return (
         <PortalDropdown trigger={trigger} position="bottom-right">
             <div className="py-1">
-                <button
-                    onClick={onEdit}
-                    className="group flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400"
-                >
-                    <FiEdit className="mr-3 h-4 w-4" aria-hidden="true" />
-                    Edit
-                </button>
-                <button
-                    onClick={onDelete}
-                    className="group flex items-center w-full px-4 py-2 text-sm text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/30 hover:text-error-700 dark:hover:text-error-300"
-                >
-                    <FiTrash2 className="mr-3 h-4 w-4" aria-hidden="true" />
-                    Delete
-                </button>
+                {hasEditPermission && (
+                    <button
+                        onClick={onEdit}
+                        className="group flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400"
+                    >
+                        <FiEdit className="mr-3 h-4 w-4" aria-hidden="true" />
+                        Edit
+                    </button>
+                )}
+                {hasDeletePermission && (
+                    <button
+                        onClick={onDelete}
+                        className="group flex items-center w-full px-4 py-2 text-sm text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/30 hover:text-error-700 dark:hover:text-error-300"
+                    >
+                        <FiTrash2 className="mr-3 h-4 w-4" aria-hidden="true" />
+                        Delete
+                    </button>
+                )}
             </div>
         </PortalDropdown>
     );
@@ -169,8 +178,8 @@ export default function RolePermissionsIndex({
     type,
 }) {
     const { props } = usePage();
+    const { auth } = props;
     const flash = props.flash || {};
-    const auth = props.auth || {};
 
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
@@ -195,6 +204,15 @@ export default function RolePermissionsIndex({
         direction: initialFilters?.direction || "asc",
     });
     const { success, error } = useToast();
+
+    // Helper function to check permissions
+    const hasPermission = (permission) => {
+        return (
+            auth.user &&
+            auth.user.permissions &&
+            auth.user.permissions.includes(permission)
+        );
+    };
 
     const prevFiltersRef = useRef({
         search: initialFilters?.search || "",
@@ -602,14 +620,16 @@ export default function RolePermissionsIndex({
                         <p className="mt-1 text-sm">
                             Get started by creating a new role
                         </p>
-                        <div className="mt-6">
-                            <Link href={route("admin.roles.create")}>
-                                <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
-                                    <FiPlus className="mr-2 h-5 w-5" />
-                                    Add New Role
-                                </PrimaryButton>
-                            </Link>
-                        </div>
+                        {hasPermission("create roles") && (
+                            <div className="mt-6">
+                                <Link href={route("admin.roles.create")}>
+                                    <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
+                                        <FiPlus className="mr-2 h-5 w-5" />
+                                        Add New Role
+                                    </PrimaryButton>
+                                </Link>
+                            </div>
+                        )}
                     </>
                 ) : (
                     <>
@@ -620,14 +640,16 @@ export default function RolePermissionsIndex({
                         <p className="mt-1 text-sm">
                             Get started by creating a new permission
                         </p>
-                        <div className="mt-6">
-                            <Link href={route("admin.permissions.create")}>
-                                <PrimaryButton className="flex items-center bg-accent-600 hover:bg-accent-700 focus:ring-accent-500">
-                                    <FiPlus className="mr-2 h-5 w-5" />
-                                    Add New Permission
-                                </PrimaryButton>
-                            </Link>
-                        </div>
+                        {hasPermission("create permissions") && (
+                            <div className="mt-6">
+                                <Link href={route("admin.permissions.create")}>
+                                    <PrimaryButton className="flex items-center bg-accent-600 hover:bg-accent-700 focus:ring-accent-500">
+                                        <FiPlus className="mr-2 h-5 w-5" />
+                                        Add New Permission
+                                    </PrimaryButton>
+                                </Link>
+                            </div>
+                        )}
                     </>
                 )}
             </div>
@@ -651,6 +673,12 @@ export default function RolePermissionsIndex({
                     )
                 }
                 onDelete={() => openDeleteModal(item.id, item.name, type)}
+                hasEditPermission={hasPermission(
+                    type === "roles" ? "edit roles" : "edit permissions"
+                )}
+                hasDeletePermission={hasPermission(
+                    type === "roles" ? "delete roles" : "delete permissions"
+                )}
             />
         ),
         [type, openDeleteModal]
@@ -658,30 +686,24 @@ export default function RolePermissionsIndex({
 
     const createButton = useMemo(
         () =>
-            type === "roles" ? (
+            type === "roles" && hasPermission("create roles") ? (
                 <Link href={route("admin.roles.create")}>
                     <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
                         <FiPlus className="mr-2 h-5 w-5" />
                         Add Role
                     </PrimaryButton>
                 </Link>
-            ) : (
+            ) : type === "permissions" &&
+              hasPermission("create permissions") ? (
                 <Link href={route("admin.permissions.create")}>
                     <PrimaryButton className="flex items-center bg-accent-600 hover:bg-accent-700 focus:ring-accent-500">
                         <FiPlus className="mr-2 h-5 w-5" />
                         Add Permission
                     </PrimaryButton>
                 </Link>
-            ),
+            ) : null,
         [type]
     );
-
-    const canManageRoles =
-        auth.user?.permissions?.includes("manage.roles") ||
-        auth.user?.roles?.includes("master");
-    const canManagePermissions =
-        auth.user?.permissions?.includes("manage.permissions") ||
-        auth.user?.roles?.includes("master");
 
     return (
         <AdminLayout
@@ -690,40 +712,52 @@ export default function RolePermissionsIndex({
             <Head
                 title={type === "roles" ? "Manage Roles" : "Manage Permissions"}
             />
-            <ConfirmationModal
-                isOpen={deleteModal.isOpen}
-                onClose={closeDeleteModal}
-                onConfirm={handleDelete}
-                title={`Confirm Delete ${
-                    deleteModal.type === "roles" ? "Role" : "Permission"
-                }`}
-                message={`Are you sure you want to delete ${
-                    deleteModal.type === "roles" ? "role" : "permission"
-                } "${deleteModal.name}"? This action cannot be undone.`}
-                confirmText={`Delete ${
-                    deleteModal.type === "roles" ? "Role" : "Permission"
-                }`}
-                cancelText="Cancel"
-            />
-            <ConfirmationModal
-                isOpen={bulkDeleteModal.isOpen}
-                onClose={closeBulkDeleteModal}
-                onConfirm={handleBulkDelete}
-                title={`Confirm Bulk Delete ${
-                    bulkDeleteModal.type === "roles" ? "Roles" : "Permissions"
-                }`}
-                message={`Are you sure you want to delete ${
-                    bulkDeleteModal.count
-                } selected ${
-                    bulkDeleteModal.type === "roles"
-                        ? "role(s)"
-                        : "permission(s)"
-                }? This action cannot be undone.`}
-                confirmText={`Delete ${bulkDeleteModal.count} ${
-                    bulkDeleteModal.type === "roles" ? "Roles" : "Permissions"
-                }`}
-                cancelText="Cancel"
-            />
+            {hasPermission(
+                type === "roles" ? "delete roles" : "delete permissions"
+            ) && (
+                <ConfirmationModal
+                    isOpen={deleteModal.isOpen}
+                    onClose={closeDeleteModal}
+                    onConfirm={handleDelete}
+                    title={`Confirm Delete ${
+                        deleteModal.type === "roles" ? "Role" : "Permission"
+                    }`}
+                    message={`Are you sure you want to delete ${
+                        deleteModal.type === "roles" ? "role" : "permission"
+                    } "${deleteModal.name}"? This action cannot be undone.`}
+                    confirmText={`Delete ${
+                        deleteModal.type === "roles" ? "Role" : "Permission"
+                    }`}
+                    cancelText="Cancel"
+                />
+            )}
+            {hasPermission(
+                type === "roles" ? "delete roles" : "delete permissions"
+            ) && (
+                <ConfirmationModal
+                    isOpen={bulkDeleteModal.isOpen}
+                    onClose={closeBulkDeleteModal}
+                    onConfirm={handleBulkDelete}
+                    title={`Confirm Bulk Delete ${
+                        bulkDeleteModal.type === "roles"
+                            ? "Roles"
+                            : "Permissions"
+                    }`}
+                    message={`Are you sure you want to delete ${
+                        bulkDeleteModal.count
+                    } selected ${
+                        bulkDeleteModal.type === "roles"
+                            ? "role(s)"
+                            : "permission(s)"
+                    }? This action cannot be undone.`}
+                    confirmText={`Delete ${bulkDeleteModal.count} ${
+                        bulkDeleteModal.type === "roles"
+                            ? "Roles"
+                            : "Permissions"
+                    }`}
+                    cancelText="Cancel"
+                />
+            )}
             <CrudLayout
                 title={
                     type === "roles"
@@ -740,30 +774,36 @@ export default function RolePermissionsIndex({
                     <div className="mb-6">
                         <div className="flex flex-wrap items-center gap-4 mb-4">
                             <div className="flex space-x-1">
-                                <button
-                                    onClick={() => handleTypeChange("roles")}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium ${
-                                        type === "roles"
-                                            ? "bg-primary-600 text-white"
-                                            : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600"
-                                    }`}
-                                >
-                                    <FiShield className="inline mr-2 h-4 w-4" />
-                                    Roles
-                                </button>
-                                <button
-                                    onClick={() =>
-                                        handleTypeChange("permissions")
-                                    }
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium ${
-                                        type === "permissions"
-                                            ? "bg-accent-600 text-white"
-                                            : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600"
-                                    }`}
-                                >
-                                    <FiKey className="inline mr-2 h-4 w-4" />
-                                    Permissions
-                                </button>
+                                {hasPermission("view roles") && (
+                                    <button
+                                        onClick={() =>
+                                            handleTypeChange("roles")
+                                        }
+                                        className={`px-4 py-2 rounded-xl text-sm font-medium ${
+                                            type === "roles"
+                                                ? "bg-primary-600 text-white"
+                                                : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                                        }`}
+                                    >
+                                        <FiShield className="inline mr-2 h-4 w-4" />
+                                        Roles
+                                    </button>
+                                )}
+                                {hasPermission("view permissions") && (
+                                    <button
+                                        onClick={() =>
+                                            handleTypeChange("permissions")
+                                        }
+                                        className={`px-4 py-2 rounded-xl text-sm font-medium ${
+                                            type === "permissions"
+                                                ? "bg-accent-600 text-white"
+                                                : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                                        }`}
+                                    >
+                                        <FiKey className="inline mr-2 h-4 w-4" />
+                                        Permissions
+                                    </button>
+                                )}
                             </div>
                         </div>
                         <FilterSection
@@ -826,18 +866,21 @@ export default function RolePermissionsIndex({
                         </div>
                     </div>
                 )}
-                {selectedItems.length > 0 && (
-                    <div className="mb-6">
-                        <BulkActions
-                            selectedCount={selectedItems.length}
-                            onBulkDelete={openBulkDeleteModal}
-                            onClearSelected={() => {
-                                clearSelectedItems();
-                                setSelectAll(false);
-                            }}
-                        />
-                    </div>
-                )}
+                {hasPermission(
+                    type === "roles" ? "delete roles" : "delete permissions"
+                ) &&
+                    selectedItems.length > 0 && (
+                        <div className="mb-6">
+                            <BulkActions
+                                selectedCount={selectedItems.length}
+                                onBulkDelete={openBulkDeleteModal}
+                                onClearSelected={() => {
+                                    clearSelectedItems();
+                                    setSelectAll(false);
+                                }}
+                            />
+                        </div>
+                    )}
                 <div className="mb-6">
                     <DataTable
                         key={type}

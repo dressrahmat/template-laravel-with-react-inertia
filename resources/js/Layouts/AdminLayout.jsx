@@ -211,7 +211,7 @@ export default function AdminLayout({ children, title }) {
                             </li>
                         )}
 
-                        {hasPermission("manage users") && (
+                        {hasPermission("view users") && (
                             <li>
                                 <Link
                                     href={route("admin.users.index")}
@@ -240,7 +240,10 @@ export default function AdminLayout({ children, title }) {
                             </li>
                         )}
 
-                        {hasPermission("manage roles") && (
+                        {hasAnyPermission([
+                            "view roles",
+                            "view permissions",
+                        ]) && (
                             <li>
                                 <Link
                                     href={route(

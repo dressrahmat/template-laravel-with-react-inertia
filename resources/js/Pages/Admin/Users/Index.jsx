@@ -28,8 +28,6 @@ import {
     FiDownload,
     FiMoreVertical,
 } from "react-icons/fi";
-import { Menu, Transition } from "@headlessui/react";
-import { Fragment } from "react";
 import { createPortal } from "react-dom";
 
 // Komponen Dropdown dengan Portal untuk merender di luar hierarchy tabel
@@ -110,7 +108,14 @@ const PortalDropdown = ({ trigger, children, position = "bottom-right" }) => {
 };
 
 // Komponen Dropdown Actions untuk setiap baris
-const RowActionsDropdown = ({ user, onView, onEdit, onDelete }) => {
+const RowActionsDropdown = ({
+    user,
+    onView,
+    onEdit,
+    onDelete,
+    hasEditPermission,
+    hasDeletePermission,
+}) => {
     const trigger = (
         <button className="inline-flex justify-center w-full p-2 text-sm font-medium text-primary-600 dark:text-primary-400 bg-neutral-50 dark:bg-neutral-800 rounded-md hover:bg-primary-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <FiMoreVertical className="h-4 w-4" aria-hidden="true" />
@@ -127,20 +132,24 @@ const RowActionsDropdown = ({ user, onView, onEdit, onDelete }) => {
                     <FiEye className="mr-3 h-4 w-4" aria-hidden="true" />
                     View
                 </button>
-                <button
-                    onClick={onEdit}
-                    className="group flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400"
-                >
-                    <FiEdit className="mr-3 h-4 w-4" aria-hidden="true" />
-                    Edit
-                </button>
-                <button
-                    onClick={onDelete}
-                    className="group flex items-center w-full px-4 py-2 text-sm text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/30 hover:text-error-700 dark:hover:text-error-300"
-                >
-                    <FiTrash2 className="mr-3 h-4 w-4" aria-hidden="true" />
-                    Delete
-                </button>
+                {hasEditPermission && (
+                    <button
+                        onClick={onEdit}
+                        className="group flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400"
+                    >
+                        <FiEdit className="mr-3 h-4 w-4" aria-hidden="true" />
+                        Edit
+                    </button>
+                )}
+                {hasDeletePermission && (
+                    <button
+                        onClick={onDelete}
+                        className="group flex items-center w-full px-4 py-2 text-sm text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/30 hover:text-error-700 dark:hover:text-error-300"
+                    >
+                        <FiTrash2 className="mr-3 h-4 w-4" aria-hidden="true" />
+                        Delete
+                    </button>
+                )}
             </div>
         </PortalDropdown>
     );
@@ -171,6 +180,7 @@ const usePersistedSelectedUsers = (initialValue = []) => {
 
 export default function UsersIndex({ users, filters: initialFilters }) {
     const { props } = usePage();
+    const { auth } = props;
     const flash = props.flash || {};
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
@@ -192,6 +202,15 @@ export default function UsersIndex({ users, filters: initialFilters }) {
         direction: initialFilters?.direction || "desc",
     });
     const { success, error } = useToast();
+
+    // Helper function to check permissions
+    const hasPermission = (permission) => {
+        return (
+            auth.user &&
+            auth.user.permissions &&
+            auth.user.permissions.includes(permission)
+        );
+    };
 
     const prevFiltersRef = useRef({
         search: initialFilters?.search || "",
@@ -535,14 +554,16 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                 <p className="mt-1 text-sm">
                     Get started by creating a new user
                 </p>
-                <div className="mt-6">
-                    <Link href={route("admin.users.create")}>
-                        <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
-                            <FiPlus className="mr-2 h-5 w-5" />
-                            Add New User
-                        </PrimaryButton>
-                    </Link>
-                </div>
+                {hasPermission("create users") && (
+                    <div className="mt-6">
+                        <Link href={route("admin.users.create")}>
+                            <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
+                                <FiPlus className="mr-2 h-5 w-5" />
+                                Add New User
+                            </PrimaryButton>
+                        </Link>
+                    </div>
+                )}
             </div>
         ),
         []
@@ -555,20 +576,23 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                 onView={() => router.visit(route("admin.users.show", user.id))}
                 onEdit={() => router.visit(route("admin.users.edit", user.id))}
                 onDelete={() => openDeleteModal(user.id, user.name)}
+                hasEditPermission={hasPermission("edit users")}
+                hasDeletePermission={hasPermission("delete users")}
             />
         ),
         [openDeleteModal]
     );
 
     const createButton = useMemo(
-        () => (
-            <Link href={route("admin.users.create")}>
-                <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
-                    <FiUserPlus className="mr-2 h-5 w-5" />
-                    Add User
-                </PrimaryButton>
-            </Link>
-        ),
+        () =>
+            hasPermission("create users") ? (
+                <Link href={route("admin.users.create")}>
+                    <PrimaryButton className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500">
+                        <FiUserPlus className="mr-2 h-5 w-5" />
+                        Add User
+                    </PrimaryButton>
+                </Link>
+            ) : null,
         []
     );
 
@@ -586,15 +610,17 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                 cancelText="Cancel"
             />
 
-            <ConfirmationModal
-                isOpen={bulkDeleteModal.isOpen}
-                onClose={closeBulkDeleteModal}
-                onConfirm={handleBulkDelete}
-                title="Confirm Bulk Delete"
-                message={`Are you sure you want to delete ${bulkDeleteModal.count} selected user(s)? This action cannot be undone.`}
-                confirmText={`Delete ${bulkDeleteModal.count} Users`}
-                cancelText="Cancel"
-            />
+            {hasPermission("delete users") && (
+                <ConfirmationModal
+                    isOpen={bulkDeleteModal.isOpen}
+                    onClose={closeBulkDeleteModal}
+                    onConfirm={handleBulkDelete}
+                    title="Confirm Bulk Delete"
+                    message={`Are you sure you want to delete ${bulkDeleteModal.count} selected user(s)? This action cannot be undone.`}
+                    confirmText={`Delete ${bulkDeleteModal.count} Users`}
+                    cancelText="Cancel"
+                />
+            )}
 
             <CrudLayout
                 title="User Management"
@@ -664,7 +690,7 @@ export default function UsersIndex({ users, filters: initialFilters }) {
                     </div>
                 )}
 
-                {selectedUsers.length > 0 && (
+                {hasPermission("delete users") && selectedUsers.length > 0 && (
                     <div className="mb-6">
                         <BulkActions
                             selectedCount={selectedUsers.length}
