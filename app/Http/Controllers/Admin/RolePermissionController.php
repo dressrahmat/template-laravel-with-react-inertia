@@ -77,12 +77,14 @@ class RolePermissionController extends Controller
     public function createRole()
     {
         $authUser = auth()->user();
-        $permissions = Permission::all()->groupBy(function ($permission) {
-            // Group permissions by module (e.g., 'user.', 'anggota.')
-            $parts = explode('.', $permission->name);
+        
+        // Mengambil semua permissions dari database
+        $permissions = Permission::all()
+            ->groupBy(function ($permission) {
+                $parts = explode('.', $permission->name);
 
-            return count($parts) > 1 ? $parts[0] : 'general';
-        });
+                return count($parts) > 1 ? $parts[0] : 'general';
+            });
 
         return Inertia::render('Admin/RolePermissions/CreateRole', [
             'permissions' => $permissions,
