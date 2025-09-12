@@ -166,81 +166,57 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'remove_photo' => 'nullable|boolean',
+            'roles' => 'nullable|array',
+            'roles.*' => 'string|exists:roles,name',
         ]);
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-        ];
-
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
-
         try {
-            // Simpan roles lama untuk audit
-            $oldRoles = $user->getRoleNames()->toArray();
+            // Siapkan data untuk update
+            $data = [
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+            ];
 
+            // Tambahkan password jika diisi
+            if (!empty($validated['password'])) {
+                $data['password'] = Hash::make($validated['password']);
+            }
+
+            // Tangani file upload
+            if ($request->hasFile('foto')) {
+                // Hapus foto lama jika ada
+                if ($user->foto_path) {
+                    Storage::disk('public')->delete($user->foto_path);
+                }
+                // Simpan foto baru
+                $path = $request->file('foto')->store('profile_photos', 'public');
+                $data['foto_path'] = $path;
+            } elseif ($request->input('remove_photo') && $user->foto_path) {
+                // Hapus foto jika remove_photo true
+                Storage::disk('public')->delete($user->foto_path);
+                $data['foto_path'] = null;
+            }
+
+            // Update user
             $user->update($data);
-            // Sync roles
-            if ($request->has('roles')) {
-                $user->syncRoles($request->roles);
+
+            // Sync roles jika ada
+            if (isset($validated['roles'])) {
+                $user->syncRoles($validated['roles']);
             }
 
             return redirect()->route('admin.users.index')
                 ->with('success', 'User updated successfully.');
 
         } catch (\Exception $e) {
-
-            return back()->with('error', 'Failed to update user: '.$e->getMessage());
-        }
-    }
-
-    public function updatePhoto(Request $request, User $user)
-    {
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        try {
-            // Delete old photo if exists
-            if ($user->foto_path && Storage::disk('public')->exists($user->foto_path)) {
-                Storage::disk('public')->delete($user->foto_path);
-            }
-
-            // Store new photo - MIRIP DENGAN STORE
-            $path = $request->file('foto')->store('user-photos', 'public');
-
-            // Update user
-            $user->update(['foto_path' => $path]);
-
-            return back()->with('success', 'Profile photo updated successfully.');
-
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to update foto user: '.$e->getMessage());
-        }
-    }
-
-    // Tambahkan method removePhoto
-    public function removePhoto(User $user)
-    {
-        try {
-            // Delete photo from storage
-            if ($user->foto_path && Storage::disk('public')->exists($user->foto_path)) {
-                Storage::disk('public')->delete($user->foto_path);
-            }
-
-            // Update user record
-            $user->update(['foto_path' => null]);
-
-            return back()->with('success', 'Profile photo removed successfully.');
-
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to remove photo: '.$e->getMessage());
+            \Log::error('Gagal update user:', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Failed to update user: ' . $e->getMessage());
         }
     }
 

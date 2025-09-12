@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Head, useForm, Link, usePage, router } from "@inertiajs/react";
+import { Head, useForm, Link, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { useToast } from "@/Contexts/ToastContext";
 import TextInput from "@/Components/TextInput";
@@ -24,7 +24,7 @@ export default function EditUser({ user, roles }) {
           )
         : [];
 
-    const { data, setData, errors, put, processing, reset } = useForm({
+    const { data, setData, errors, post, processing, reset } = useForm({
         name: user.name,
         email: user.email,
         password: "",
@@ -32,10 +32,10 @@ export default function EditUser({ user, roles }) {
         foto: null,
         remove_photo: false,
         roles: initialRoles,
-        _method: "PUT",
+        _method: "PUT", // Method spoofing
     });
 
-    // Fungsi untuk mendapatkan URL foto - SAMA DENGAN SHOW COMPONENT
+    // Fungsi untuk mendapatkan URL foto
     const getPhotoUrl = () => {
         if (user.foto_path && !data.remove_photo) {
             return `/storage/${user.foto_path}`;
@@ -44,8 +44,6 @@ export default function EditUser({ user, roles }) {
     };
 
     const [previewUrl, setPreviewUrl] = useState(getPhotoUrl());
-    const [photoUploading, setPhotoUploading] = useState(false);
-    const [photoRemoving, setPhotoRemoving] = useState(false);
     const fileInputRef = useRef(null);
     const { success, error: showError } = useToast();
     const { props: pageProps } = usePage();
@@ -60,23 +58,18 @@ export default function EditUser({ user, roles }) {
         }
     }, [flash]);
 
-    // Update previewUrl ketika user.foto_path berubah atau remove_photo berubah
+    // Update previewUrl ketika user.foto_path atau remove_photo berubah
     useEffect(() => {
-        if (!data.foto && !previewUrl?.startsWith("blob:")) {
+        if (data.foto) {
+            const url = URL.createObjectURL(data.foto);
+            setPreviewUrl(url);
+            return () => URL.revokeObjectURL(url);
+        } else {
             setPreviewUrl(getPhotoUrl());
         }
-    }, [user.foto_path, data.remove_photo]);
+    }, [data.foto, data.remove_photo, user.foto_path]);
 
-    // Clean up preview URL
-    useEffect(() => {
-        return () => {
-            if (previewUrl && previewUrl.startsWith("blob:")) {
-                URL.revokeObjectURL(previewUrl);
-            }
-        };
-    }, [previewUrl]);
-
-    const handleFileChange = async (e) => {
+    const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -91,100 +84,51 @@ export default function EditUser({ user, roles }) {
             return;
         }
 
-        // Upload foto secara langsung
-        setPhotoUploading(true);
-
-        try {
-            const formData = new FormData();
-            formData.append("foto", file);
-
-            router.post(route("admin.users.update-photo", user.id), formData, {
-                forceFormData: true,
-                onSuccess: () => {
-                    success("Profile photo updated successfully!");
-
-                    // Update preview
-                    const url = URL.createObjectURL(file);
-                    setPreviewUrl(url);
-
-                    // Reset form data untuk foto
-                    setData("foto", null);
-                    setData("remove_photo", false);
-
-                    // Refresh user data
-                    router.reload({ only: ["user"] });
-                },
-                onError: (errors) => {
-                    showError(errors.foto || "Failed to upload photo");
-                },
-                onFinish: () => {
-                    setPhotoUploading(false);
-                    if (fileInputRef.current) {
-                        fileInputRef.current.value = "";
-                    }
-                },
-            });
-        } catch (error) {
-            showError("Failed to upload photo");
-            console.error("Upload error:", error);
-            setPhotoUploading(false);
-        }
+        setData({
+            ...data,
+            foto: file,
+            remove_photo: false, // Reset remove_photo jika memilih foto baru
+        });
     };
 
     const removeUploadedImage = () => {
-        if (previewUrl && previewUrl.startsWith("blob:")) {
-            URL.revokeObjectURL(previewUrl);
-        }
-        // Kembali ke foto yang tersimpan di database
-        setPreviewUrl(getPhotoUrl());
-        setData("foto", null);
+        setData({
+            ...data,
+            foto: null,
+            remove_photo: user.foto_path ? true : false, // Tandai untuk menghapus foto jika ada
+        });
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
     };
 
-    const removeCurrentPhoto = () => {
-        setPhotoRemoving(true);
-
-        router.post(
-            route("admin.users.remove-photo", user.id),
-            {},
-            {
-                onSuccess: () => {
-                    success("Profile photo removed successfully!");
-                    setPreviewUrl(null);
-                    setData("remove_photo", true);
-                    router.reload({ only: ["user"] });
-                },
-                onError: (errors) => {
-                    showError(errors.message || "Failed to remove photo");
-                },
-                onFinish: () => {
-                    setPhotoRemoving(false);
-                },
-            }
-        );
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log("Data yang dikirim:", data); // Debugging
 
-        // Menggunakan data langsung tanpa FormData manual
-        // Inertia akan otomatis menangani FormData jika ada file
-        put(route("admin.users.update", user.id), {
-            ...data,
+        post(route("admin.users.update", user.id), {
+            forceFormData: true, // Pastikan FormData digunakan untuk file
             onSuccess: () => {
                 success("User updated successfully!");
-                reset("password", "password_confirmation");
+                reset(
+                    "password",
+                    "password_confirmation",
+                    "foto",
+                    "remove_photo"
+                );
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
             },
             onError: (errors) => {
+                console.log("Error dari server:", errors); // Debugging
                 showError("Failed to update user. Please check the form.");
             },
         });
     };
 
     const triggerFileInput = () => {
-        if (!photoUploading && !photoRemoving) {
+        if (!processing) {
             fileInputRef.current?.click();
         }
     };
@@ -208,11 +152,7 @@ export default function EditUser({ user, roles }) {
                         </p>
                     </div>
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className="space-y-6"
-                        encType="multipart/form-data"
-                    >
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Photo Upload */}
                         <div>
                             <InputLabel htmlFor="foto" value="Profile Photo" />
@@ -221,13 +161,13 @@ export default function EditUser({ user, roles }) {
                                 <div className="relative">
                                     <div
                                         className={`w-24 h-24 rounded-full border-2 border-dashed border-neutral-300 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 flex items-center justify-center cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors ${
-                                            photoUploading || photoRemoving
+                                            processing
                                                 ? "opacity-50 cursor-not-allowed"
                                                 : ""
                                         }`}
                                         onClick={triggerFileInput}
                                     >
-                                        {photoUploading ? (
+                                        {processing ? (
                                             <div className="text-center">
                                                 <svg
                                                     className="animate-spin h-8 w-8 text-neutral-400 mx-auto"
@@ -250,33 +190,7 @@ export default function EditUser({ user, roles }) {
                                                     ></path>
                                                 </svg>
                                                 <span className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                                                    Uploading...
-                                                </span>
-                                            </div>
-                                        ) : photoRemoving ? (
-                                            <div className="text-center">
-                                                <svg
-                                                    className="animate-spin h-8 w-8 text-neutral-400 mx-auto"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <circle
-                                                        className="opacity-25"
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    ></circle>
-                                                    <path
-                                                        className="opacity-75"
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                    ></path>
-                                                </svg>
-                                                <span className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                                                    Removing...
+                                                    Processing...
                                                 </span>
                                             </div>
                                         ) : previewUrl ? (
@@ -293,7 +207,7 @@ export default function EditUser({ user, roles }) {
                                                         removeUploadedImage();
                                                     }}
                                                     className="absolute -top-2 -right-2 bg-error-500 text-white rounded-full p-1 hover:bg-error-600 transition-colors"
-                                                    disabled={photoUploading}
+                                                    disabled={processing}
                                                 >
                                                     <FiX className="w-4 h-4" />
                                                 </button>
@@ -316,35 +230,17 @@ export default function EditUser({ user, roles }) {
                                             ? "Change profile photo (max 2MB)"
                                             : "Upload a profile photo (max 2MB)"}
                                     </p>
-                                    <div className="flex gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={triggerFileInput}
-                                            className="inline-flex items-center px-4 py-2 bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-md font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-neutral-800 text-sm"
-                                            disabled={
-                                                photoUploading || photoRemoving
-                                            }
-                                        >
-                                            <FiCamera className="w-4 h-4 mr-2" />
-                                            {hasPhoto || hasNewPhoto
-                                                ? "Change Photo"
-                                                : "Select Photo"}
-                                        </button>
-                                        {(hasPhoto || hasNewPhoto) && (
-                                            <button
-                                                type="button"
-                                                onClick={removeCurrentPhoto}
-                                                className="inline-flex items-center px-4 py-2 bg-error-100 dark:bg-error-900/30 border border-error-300 dark:border-error-700 rounded-md font-medium text-error-700 dark:text-error-300 hover:bg-error-200 dark:hover:bg-error-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-neutral-800 text-sm"
-                                                disabled={
-                                                    photoUploading ||
-                                                    photoRemoving
-                                                }
-                                            >
-                                                <FiTrash2 className="w-4 h-4 mr-2" />
-                                                Remove Photo
-                                            </button>
-                                        )}
-                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={triggerFileInput}
+                                        className="inline-flex items-center px-4 py-2 bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-md font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-neutral-800 text-sm"
+                                        disabled={processing}
+                                    >
+                                        <FiCamera className="w-4 h-4 mr-2" />
+                                        {hasPhoto || hasNewPhoto
+                                            ? "Change Photo"
+                                            : "Select Photo"}
+                                    </button>
                                 </div>
                             </div>
 

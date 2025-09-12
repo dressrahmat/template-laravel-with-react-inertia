@@ -73,9 +73,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/users/bulk-destroy', [UserController::class, 'bulkDestroy'])->middleware(['permission:delete users'])->name('users.bulk-destroy');
         Route::post('/users/export', [UserController::class, 'export'])->middleware(['permission:view users'])->name('users.export');
         Route::put('/users/bulk-update', [UserController::class, 'bulkUpdate'])->middleware(['permission:edit users'])->name('users.bulk-update');
-        // Upload foto
-        Route::post('/users/{user}/update-foto', [UserController::class, 'updatePhoto'])->middleware(['permission:edit users'])->name('users.update-photo');
-        Route::post('/users/{user}/remove-foto', [UserController::class, 'removePhoto'])->middleware(['permission:delete users'])->name('users.remove-photo');
 
         // Roles & Permissions
         Route::get('/role-permissions', [RolePermissionController::class, 'index'])
