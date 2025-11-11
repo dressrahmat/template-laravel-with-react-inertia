@@ -19,14 +19,6 @@ class SettingController extends Controller
         // Ambil pengaturan website
         $settings = Setting::first();
 
-        // Jika belum ada data, buat data default
-        if (! $settings) {
-            $settings = Setting::create([
-                'site_name' => 'Nama Website',
-                'site_description' => 'Deskripsi Website',
-            ]);
-        }
-
         return Inertia::render('Admin/Settings/Index', [
             'settings' => $settings,
             'auth' => [

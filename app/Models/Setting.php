@@ -45,10 +45,60 @@ class Setting extends Model
     ];
 
     /**
+     * Boot method untuk handle cache clearing
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Clear cache ketika settings diupdate
+        static::saved(function () {
+            cache()->forget('app_settings');
+        });
+
+        static::deleted(function () {
+            cache()->forget('app_settings');
+        });
+    }
+
+    /**
      * Get the first website settings (singleton pattern)
      */
     public static function getSettings()
     {
-        return self::firstOrCreate([]);
+        return cache()->remember('app_settings', 3600, function () {
+            return self::first() ?? new self();
+        });
+    }
+
+    /**
+     * Helper methods untuk check enabled status
+     */
+    public function isGoogleAnalyticsEnabled(): bool
+    {
+        return $this->google_analytics_enabled && !empty($this->google_analytics_id);
+    }
+
+    public function isGoogleTagManagerEnabled(): bool
+    {
+        return $this->google_tag_manager_enabled && !empty($this->google_tag_manager_id);
+    }
+
+    public function isFacebookPixelEnabled(): bool
+    {
+        return $this->facebook_pixel_enabled && !empty($this->facebook_pixel_id);
+    }
+
+    public function isGoogleAdsenseEnabled(): bool
+    {
+        return $this->google_adsense_enabled && !empty($this->google_adsense_id);
+    }
+
+    /**
+     * Check if maintenance mode is enabled
+     */
+    public function isMaintenanceModeEnabled(): bool
+    {
+        return (bool) $this->maintenance_mode;
     }
 }

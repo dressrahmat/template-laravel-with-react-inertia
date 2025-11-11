@@ -64,13 +64,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Insert default settings
-        DB::table('setting')->insert([
-            'site_name' => 'Nama Website Anda',
-            'site_description' => 'Deskripsi website Anda',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
     }
 
     /**

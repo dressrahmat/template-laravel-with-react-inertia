@@ -15,7 +15,7 @@ return new class extends Migration
             $table->json('old_values')->nullable(); // Data lama (untuk update/delete)
             $table->json('new_values')->nullable(); // Data baru (untuk create/update)
             $table->string('ip_address')->nullable();
-            $table->string('user_agent')->nullable();
+            $table->text('user_agent')->nullable();
             $table->text('url')->nullable();
             $table->text('description')->nullable();
 
@@ -29,6 +29,7 @@ return new class extends Migration
             $table->index(['event', 'table_name']);
             $table->index('created_at');
             $table->index('user_id');
+            $table->index('affected_user_id'); // Tambahan index
         });
     }
 

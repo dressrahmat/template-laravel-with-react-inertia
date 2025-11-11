@@ -5,11 +5,14 @@ export default function Welcome({
     auth,
     laravelVersion,
     phpVersion,
-    settings,
+    settings, // Ini sekarang dari HandleInertiaRequests, bukan dari controller
     metaTags,
     canLogin,
     canRegister,
 }) {
+    // Gunakan settings dari props (yang sudah di-share oleh middleware)
+    const siteSettings = settings || {};
+
     // Variants untuk animasi
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -35,28 +38,31 @@ export default function Welcome({
     return (
         <>
             <Head>
-                <title>{metaTags?.title || settings?.site_name}</title>
-                <meta name="description" content={metaTags?.description} />
-                <meta name="keywords" content={metaTags?.keywords} />
-                <meta name="author" content={metaTags?.author} />
+                <title>{siteSettings.site_name}</title>
+                <meta
+                    name="description"
+                    content={siteSettings.site_description}
+                />
+                <meta name="keywords" content={siteSettings.meta_keywords} />
+                <meta name="author" content={siteSettings.meta_author} />
 
                 {/* Open Graph */}
-                <meta property="og:title" content={metaTags?.title} />
+                <meta property="og:title" content={siteSettings.site_name} />
                 <meta
                     property="og:description"
-                    content={metaTags?.description}
+                    content={siteSettings.site_description}
                 />
-                <meta property="og:image" content={metaTags?.og_image} />
+                <meta property="og:image" content={siteSettings.og_image} />
                 <meta property="og:type" content="website" />
 
                 {/* Twitter Card */}
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={metaTags?.title} />
+                <meta name="twitter:title" content={siteSettings.site_name} />
                 <meta
                     name="twitter:description"
-                    content={metaTags?.description}
+                    content={siteSettings.site_description}
                 />
-                <meta name="twitter:image" content={metaTags?.og_image} />
+                <meta name="twitter:image" content={siteSettings.og_image} />
             </Head>
 
             <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-primary-100 dark:from-neutral-900 dark:to-primary-900">
@@ -73,15 +79,15 @@ export default function Welcome({
                                 variants={itemVariants}
                                 className="flex items-center space-x-4"
                             >
-                                {settings?.site_logo ? (
+                                {siteSettings.site_logo ? (
                                     <img
-                                        src={`/storage/${settings.site_logo}`}
-                                        alt={settings.site_name}
+                                        src={siteSettings.site_logo}
+                                        alt={siteSettings.site_name}
                                         className="h-12 w-auto"
                                     />
                                 ) : (
                                     <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
-                                        {settings?.site_name || "Website"}
+                                        {siteSettings.site_name}
                                     </div>
                                 )}
                             </motion.div>
