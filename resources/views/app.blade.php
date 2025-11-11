@@ -5,7 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title inertia>{{ $blade_settings['site_name'] ?? config('app.name', 'Laravel') }}</title>
+    <title inertia>
+        @if (isset($page['props']['pageTitle']))
+            {{ $page['props']['pageTitle'] }} - {{ $blade_settings['site_name'] ?? config('app.name', 'Laravel') }}
+        @else
+            {{ $blade_settings['site_name'] ?? config('app.name', 'Laravel') }}
+        @endif
+    </title>
 
     {{-- Dynamic Meta Tags --}}
     <meta name="description" content="{{ $blade_settings['site_description'] ?? '' }}">
