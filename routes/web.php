@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\RolePermissionController;
 
 // Route untuk frontend (publik)
 Route::get('/', [BerandaController::class, 'index'])->name('welcome');
+Route::get('/maintenance', [BerandaController::class, 'maintenance'])->name('maintenance');
 
 // Route untuk menangani semua rute yang tidak terdaftar (404)
 Route::fallback(function (Request $request) {

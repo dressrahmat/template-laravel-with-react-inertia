@@ -105,6 +105,11 @@ export default {
                 'xl': '1rem',
                 '2xl': '1.5rem',
             },
+            animation: {
+                'fade-in-up': 'fadeInUp 0.5s ease-out',
+                'fade-in-scale': 'fadeInScale 0.5s ease-out 0.1s both',
+                'fade-in': 'fadeIn 0.5s ease-out 0.3s both',
+            }
         },
     },
     plugins: [require('@tailwindcss/forms')],

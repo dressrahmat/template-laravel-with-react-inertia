@@ -257,6 +257,51 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
+     * Check if current route should be excluded from maintenance mode
+     */
+    private function isExcludedFromMaintenance(Request $request): bool
+    {
+        // Daftar route names yang dikecualikan dari maintenance mode
+        $excludedRoutes = [
+            'login',
+            'auth.login',
+            'login.store',
+            'logout',
+            'password.request',
+            'password.email',
+            'password.reset',
+            'password.update',
+        ];
+
+        // Daftar path patterns yang dikecualikan
+        $excludedPaths = [
+            '/login',
+            '/auth/login',
+            '/logout',
+            '/forgot-password',
+            '/reset-password',
+            '/password/reset',
+        ];
+
+        $currentRoute = $request->route();
+        
+        // Cek berdasarkan route name
+        if ($currentRoute && in_array($currentRoute->getName(), $excludedRoutes)) {
+            return true;
+        }
+
+        // Cek berdasarkan path
+        $currentPath = $request->path();
+        foreach ($excludedPaths as $path) {
+            if (str_starts_with($currentPath, ltrim($path, '/'))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Main share method
      */
     public function share(Request $request): array
@@ -312,16 +357,20 @@ class HandleInertiaRequests extends Middleware
             cache()->forget('app_settings');
         }
 
-        // Check maintenance mode
+        // Check maintenance mode - skip untuk route yang dikecualikan
         $settings = Setting::getSettings();
-        if ($settings->isMaintenanceModeEnabled() && !$request->user()?->can('access admin panel')) {
+        
+        if ($settings->isMaintenanceModeEnabled() && 
+            !$this->isExcludedFromMaintenance($request) && 
+            !$request->user()?->can('access admin panel')) {
+            
             if ($request->inertia()) {
-                return inertia('Maintenance', [
+                return inertia('Front/Maintenance', [
                     'message' => $settings->maintenance_message
                 ]);
             }
             
-            return response()->view('maintenance', [
+            return response()->view('Front.Maintenance', [
                 'message' => $settings->maintenance_message
             ], 503);
         }

@@ -21,4 +21,10 @@ class BerandaController extends Controller
             'phpVersion' => PHP_VERSION,
         ]);
     }
+
+    public function maintenance()
+    {
+
+        return Inertia::render('Front/Maintenance');
+    }
 }
