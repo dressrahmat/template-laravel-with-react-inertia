@@ -281,15 +281,6 @@ export default function IndexSetting({ settings }) {
                 google_adsense_enabled: data.google_adsense_enabled ? 1 : 0,
                 maintenance_mode: data.maintenance_mode ? 1 : 0,
             },
-            onSuccess: () => {
-                success("Settings updated successfully!");
-                setData("site_logo", null);
-                setData("site_favicon", null);
-                setData("og_image", null);
-            },
-            onError: (errors) => {
-                showError("Failed to update settings. Please check the form.");
-            },
         });
     };
 

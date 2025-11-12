@@ -12,17 +12,9 @@ class BerandaController extends Controller
 {
     public function index()
     {
-        $metaTags = [
-            'title' => config('app.name', 'Laravel'),
-            'description' => '',
-            'keywords' => '',
-            'author' => '',
-            'og_image' => null,
-        ];
 
-        return Inertia::render('Welcome', [
+        return Inertia::render('Front/Beranda', [
             // Hanya kirim data yang spesifik untuk page ini
-            'metaTags' => $metaTags,
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
             'laravelVersion' => Application::VERSION,
