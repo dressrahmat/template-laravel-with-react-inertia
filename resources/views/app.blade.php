@@ -5,19 +5,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title inertia>
-        @if (isset($page['props']['pageTitle']))
-            {{ $page['props']['pageTitle'] }} - {{ $blade_settings['site_name'] ?? config('app.name', 'Laravel') }}
-        @else
-            {{ $blade_settings['site_name'] ?? config('app.name', 'Laravel') }}
-        @endif
-    </title>
+    {{-- Title akan dihandle oleh Inertia --}}
+    <title inertia>{{ $blade_settings['site_name'] }}</title>
 
-    {{-- Dynamic Meta Tags --}}
-    <meta name="description" content="{{ $blade_settings['site_description'] ?? '' }}">
+    {{-- Meta description default - bisa dioverride oleh komponen React --}}
+    <meta name="description" content="{{ $blade_settings['site_description'] }}">
 
-    {{-- Google Tag Manager --}}
+    {{-- Tracking scripts hanya di blade --}}
     @if ($blade_settings['tracking']['google_tag_manager']['enabled'] ?? false)
+        <!-- Google Tag Manager -->
         <script>
             (function(w, d, s, l, i) {
                 w[l] = w[l] || [];
@@ -38,6 +34,7 @@
 
     {{-- Facebook Pixel --}}
     @if ($blade_settings['tracking']['facebook_pixel']['enabled'] ?? false)
+        <!-- Facebook Pixel Code -->
         <script>
             ! function(f, b, e, v, n, t, s) {
                 if (f.fbq) return;
@@ -64,6 +61,7 @@
 
     {{-- Google AdSense --}}
     @if ($blade_settings['tracking']['google_adsense']['enabled'] ?? false)
+        <!-- Google AdSense -->
         <script async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ $blade_settings['tracking']['google_adsense']['id'] }}"
             crossorigin="anonymous"></script>
@@ -88,9 +86,11 @@
 <body class="font-sans antialiased">
     {{-- Google Tag Manager (noscript) --}}
     @if ($blade_settings['tracking']['google_tag_manager']['enabled'] ?? false)
-        <noscript><iframe
+        <noscript>
+            <iframe
                 src="https://www.googletagmanager.com/ns.html?id={{ $blade_settings['tracking']['google_tag_manager']['id'] }}"
-                height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+        </noscript>
     @endif
 
     {{-- Custom Body Scripts --}}

@@ -1,8 +1,10 @@
 import ApplicationLogo from "@/Components/ApplicationLogo";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { motion } from "framer-motion";
 
 export default function GuestLayout({ children }) {
+    const { settings } = usePage().props;
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-primary-100 dark:from-neutral-900 dark:to-primary-900 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
             <motion.div
@@ -32,8 +34,8 @@ export default function GuestLayout({ children }) {
                 className="mt-8 text-center text-sm text-neutral-600 dark:text-neutral-400"
             >
                 <p>
-                    © {new Date().getFullYear()} Your Company Name. All rights
-                    reserved.
+                    © {new Date().getFullYear()} {settings.site_name}. All
+                    rights reserved.
                 </p>
             </motion.div>
         </div>

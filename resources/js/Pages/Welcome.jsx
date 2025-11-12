@@ -37,34 +37,6 @@ export default function Welcome({
 
     return (
         <>
-            <Head>
-                <title>{siteSettings.site_name}</title>
-                <meta
-                    name="description"
-                    content={siteSettings.site_description}
-                />
-                <meta name="keywords" content={siteSettings.meta_keywords} />
-                <meta name="author" content={siteSettings.meta_author} />
-
-                {/* Open Graph */}
-                <meta property="og:title" content={siteSettings.site_name} />
-                <meta
-                    property="og:description"
-                    content={siteSettings.site_description}
-                />
-                <meta property="og:image" content={siteSettings.og_image} />
-                <meta property="og:type" content="website" />
-
-                {/* Twitter Card */}
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={siteSettings.site_name} />
-                <meta
-                    name="twitter:description"
-                    content={siteSettings.site_description}
-                />
-                <meta name="twitter:image" content={siteSettings.og_image} />
-            </Head>
-
             <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-primary-100 dark:from-neutral-900 dark:to-primary-900">
                 <div className="relative flex min-h-screen flex-col items-center justify-center selection:bg-primary-500 selection:text-neutral-100">
                     <div className="relative w-full max-w-6xl px-6 py-12">

@@ -18,10 +18,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
+        // Hanya kirim data yang spesifik untuk halaman login
+        // Meta tags akan ditangani oleh komponen React
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
-            'pageTitle' => 'Login',
         ]);
     }
 

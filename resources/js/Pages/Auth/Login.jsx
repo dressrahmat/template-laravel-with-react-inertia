@@ -4,11 +4,13 @@ import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import GuestLayout from "@/Layouts/GuestLayout";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-export default function Login({ status, canResetPassword, pageTitle }) {
+export default function Login({ status, canResetPassword }) {
+    const { settings } = usePage().props;
+
     const { data, setData, post, processing, errors, reset } = useForm({
         email: "",
         password: "",
@@ -19,7 +21,6 @@ export default function Login({ status, canResetPassword, pageTitle }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route("login"), {
             onFinish: () => reset("password"),
         });
@@ -29,7 +30,6 @@ export default function Login({ status, canResetPassword, pageTitle }) {
         setShowPassword(!showPassword);
     };
 
-    // Variants untuk animasi
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -51,9 +51,15 @@ export default function Login({ status, canResetPassword, pageTitle }) {
         },
     };
 
+    // Hanya set meta tags yang diperlukan
+    const pageTitle = `Login - ${settings.site_name}`;
+    const pageDescription = `Login to your account at ${settings.site_name}`;
+
     return (
         <GuestLayout>
-            <Head title={pageTitle} />
+            <Head>
+                <title>{pageTitle}</title>
+            </Head>
 
             <motion.div
                 variants={containerVariants}
