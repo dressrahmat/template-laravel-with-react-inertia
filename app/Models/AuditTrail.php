@@ -2,65 +2,43 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class AuditTrail extends Model
 {
-    use HasFactory;
-
-    /**
-     * Nama tabel yang terkait dengan model.
-     *
-     * @var string
-     */
     protected $table = 'audit_trails';
 
-    /**
-     * Atribut yang dapat diisi secara massal.
-     *
-     * @var array
-     */
     protected $fillable = [
+        'user_id',
+        'user_type',
         'event',
-        'table_name',
+        'auditable_type',
+        'auditable_id',
+        'affected_user_id',
         'old_values',
         'new_values',
         'ip_address',
         'user_agent',
         'url',
         'description',
-        'user_id',
-        'affected_user_id',
+        'tags',
+        'batch_uuid',
+        'created_at'
     ];
 
-    /**
-     * Atribut yang harus di-cast.
-     *
-     * @var array
-     */
     protected $casts = [
         'old_values' => 'array',
         'new_values' => 'array',
-        // 'created_at' => 'datetime',
-        // 'updated_at' => 'datetime',
+        'tags' => 'array',
+        'created_at' => 'datetime'
     ];
 
-    /**
-     * Atribut yang akan ditambahkan ke array atau JSON dari model.
-     *
-     * @var array
-     */
-    protected $appends = [
-        'message',
-        'created_at_human',
-        'action_color',
-        'table_display_name',
-    ];
+    public $timestamps = false;
 
     /**
-     * Dapatkan user yang melakukan aksi.
+     * User yang melakukan aksi
      */
     public function user(): BelongsTo
     {
@@ -68,7 +46,15 @@ class AuditTrail extends Model
     }
 
     /**
-     * Dapatkan user yang terpengaruh oleh aksi.
+     * Model yang di-audit
+     */
+    public function auditable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * User yang terkena dampak aksi
      */
     public function affectedUser(): BelongsTo
     {
@@ -76,68 +62,59 @@ class AuditTrail extends Model
     }
 
     /**
-     * Dapatkan representasi waktu yang mudah dibaca.
+     * Scope untuk query yang umum
      */
-    public function getCreatedAtHumanAttribute(): string
+    public function scopeToday($query)
     {
-        return $this->created_at ? $this->created_at->diffForHumans() : 'Waktu tidak tersedia';
+        return $query->whereDate('created_at', today());
     }
 
-    /**
-     * Dapatkan pesan yang dihasilkan dari log audit.
-     */
-    public function getMessageAttribute(): string
+    public function scopeForUser($query, $userId)
     {
-        $userName = $this->user ? $this->user->name : 'Sistem';
+        return $query->where('user_id', $userId);
+    }
 
-        switch ($this->event) {
-            case 'login':
-                return "{$userName} melakukan login ke sistem";
+    public function scopeForEvent($query, $event)
+    {
+        return $query->where('event', $event);
+    }
 
-            case 'logout':
-                return "{$userName} melakukan logout dari sistem";
-
-            case 'created':
-                return "{$userName} menambahkan data {$this->table_display_name} baru";
-
-            case 'updated':
-                return "{$userName} memperbarui data {$this->table_display_name}";
-
-            case 'deleted':
-                return "{$userName} menghapus data {$this->table_display_name}";
-
-            default:
-                return "{$userName} melakukan aktivitas sistem";
+    public function scopeForAuditable($query, $modelType, $modelId = null)
+    {
+        $query->where('auditable_type', $modelType);
+        
+        if ($modelId) {
+            $query->where('auditable_id', $modelId);
         }
+        
+        return $query;
+    }
+
+    public function scopeWithBatch($query, $batchUuid)
+    {
+        return $query->where('batch_uuid', $batchUuid);
     }
 
     /**
-     * Dapatkan nama tampilan untuk tabel.
+     * Get readable description
      */
-    public function getTableDisplayNameAttribute(): string
+    public function getReadableDescriptionAttribute(): string
     {
-        $tableNames = [
-            'users' => 'Pengguna',
-            'roles' => 'Roles',
-            'permissions' => 'Permissions',
-            'audit_trails' => 'Audit Trail',
-        ];
+        if ($this->description) {
+            return $this->description;
+        }
 
-        return $tableNames[$this->table_name] ?? ucwords(str_replace('_', ' ', $this->table_name));
-    }
+        $modelName = $this->auditable_type ? class_basename($this->auditable_type) : 'Record';
+        $modelId = $this->auditable_id ? "#{$this->auditable_id}" : '';
 
-    /**
-     * Dapatkan warna notifikasi berdasarkan event.
-     */
-    public function getActionColorAttribute(): string
-    {
-        return match ($this->event) {
-            'login' => 'success',
-            'logout' => 'warning',
-            'created' => 'info',
-            'updated' => 'primary',
-            'deleted' => 'error',
-            default => 'neutral'
+        return match($this->event) {
+            'created' => "Created new {$modelName}{$modelId}",
+            'updated' => "Updated {$modelName}{$modelId}",
+            'deleted' => "Deleted {$modelName}{$modelId}",
+            'restored' => "Restored {$modelName}{$modelId}",
+            'login' => 'User logged in',
+            'logout' => 'User logged out',
+            default => ucfirst($this->event) . " {$modelName}{$modelId}"
         };
     }
 }

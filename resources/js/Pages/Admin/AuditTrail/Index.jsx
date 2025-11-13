@@ -5,7 +5,7 @@ import React, {
     useMemo,
     useRef,
 } from "react";
-import { Head, Link, router, usePage } from "@inertiajs/react"; // Ensure usePage is imported
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import CrudLayout from "@/Components/CrudLayout";
 import DataTable from "@/Components/DataTable";
@@ -213,7 +213,7 @@ export default function AuditTrailIndex({
     availableTables,
     auth,
 }) {
-    const { props } = usePage(); // Use usePage hook to access Inertia props
+    const { props } = usePage();
     const flash = props.flash || {};
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
@@ -255,6 +255,15 @@ export default function AuditTrailIndex({
         sort: initialFilters?.sort || "created_at",
         direction: initialFilters?.direction || "desc",
     });
+
+    // Helper function to check permissions
+    const hasPermission = (permission) => {
+        return (
+            auth.user &&
+            auth.user.permissions &&
+            auth.user.permissions.includes(permission)
+        );
+    };
 
     useEffect(() => {
         const currentFilters = {
@@ -397,13 +406,15 @@ export default function AuditTrailIndex({
         });
     }, []);
 
+    // PERBAIKAN: Gunakan DELETE method untuk single delete seperti di user controller
     const handleDelete = useCallback(() => {
         if (deleteModal.auditTrailId) {
             router.delete(
                 route("admin.audit-trail.cleanup"),
                 {
-                    days: 0,
-                    id: deleteModal.auditTrailId,
+                    data: {
+                        id: deleteModal.auditTrailId,
+                    },
                 },
                 {
                     onSuccess: () => {
@@ -430,13 +441,15 @@ export default function AuditTrailIndex({
         setSelectedAuditTrails,
     ]);
 
+    // PERBAIKAN: Gunakan method dan struktur yang sama seperti di user controller
     const handleBulkDelete = useCallback(() => {
         if (selectedAuditTrails.length > 0) {
-            router.post(
+            router.delete(
                 route("admin.audit-trail.cleanup"),
                 {
-                    days: 0,
-                    ids: selectedAuditTrails,
+                    data: {
+                        ids: selectedAuditTrails,
+                    },
                 },
                 {
                     onSuccess: () => {
@@ -463,10 +476,12 @@ export default function AuditTrailIndex({
     ]);
 
     const handleCleanup = useCallback(() => {
-        router.post(
+        router.delete(
             route("admin.audit-trail.cleanup"),
             {
-                days: cleanupModal.days || null,
+                data: {
+                    days: cleanupModal.days || null,
+                },
             },
             {
                 onSuccess: () => {
@@ -661,10 +676,10 @@ export default function AuditTrailIndex({
                 onDelete={() =>
                     openDeleteModal(auditTrail.id, auditTrail.message)
                 }
-                canManage={auth.user.permissions.includes("manage audit trail")}
+                canManage={hasPermission("manage audit trail")}
             />
         ),
-        [openDeleteModal, auth.user.permissions]
+        [openDeleteModal]
     );
 
     const filterSection = useMemo(
@@ -765,7 +780,7 @@ export default function AuditTrailIndex({
 
     const createButton = useMemo(
         () =>
-            auth.user.permissions.includes("manage audit trail") ? (
+            hasPermission("manage audit trail") ? (
                 <PrimaryButton
                     onClick={openCleanupModal}
                     className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500"
@@ -774,7 +789,7 @@ export default function AuditTrailIndex({
                     Bersihkan Log
                 </PrimaryButton>
             ) : null,
-        [openCleanupModal, auth.user.permissions]
+        [openCleanupModal]
     );
 
     return (
@@ -791,25 +806,29 @@ export default function AuditTrailIndex({
                 cancelText="Batal"
             />
 
-            <ConfirmationModal
-                isOpen={bulkDeleteModal.isOpen}
-                onClose={closeBulkDeleteModal}
-                onConfirm={handleBulkDelete}
-                title="Konfirmasi Penghapusan Massal"
-                message={`Apakah Anda yakin ingin menghapus ${bulkDeleteModal.count} log audit trail terpilih? Tindakan ini tidak dapat dibatalkan.`}
-                confirmText={`Hapus ${bulkDeleteModal.count} Log`}
-                cancelText="Batal"
-            />
+            {hasPermission("manage audit trail") && (
+                <ConfirmationModal
+                    isOpen={bulkDeleteModal.isOpen}
+                    onClose={closeBulkDeleteModal}
+                    onConfirm={handleBulkDelete}
+                    title="Konfirmasi Penghapusan Massal"
+                    message={`Apakah Anda yakin ingin menghapus ${bulkDeleteModal.count} log audit trail terpilih? Tindakan ini tidak dapat dibatalkan.`}
+                    confirmText={`Hapus ${bulkDeleteModal.count} Log`}
+                    cancelText="Batal"
+                />
+            )}
 
-            <CleanupModal
-                isOpen={cleanupModal.isOpen}
-                onClose={closeCleanupModal}
-                onConfirm={handleCleanup}
-                days={cleanupModal.days}
-                setDays={(value) =>
-                    setCleanupModal((prev) => ({ ...prev, days: value }))
-                }
-            />
+            {hasPermission("manage audit trail") && (
+                <CleanupModal
+                    isOpen={cleanupModal.isOpen}
+                    onClose={closeCleanupModal}
+                    onConfirm={handleCleanup}
+                    days={cleanupModal.days}
+                    setDays={(value) =>
+                        setCleanupModal((prev) => ({ ...prev, days: value }))
+                    }
+                />
+            )}
 
             <CrudLayout
                 title="Manajemen Audit Trail"
@@ -874,9 +893,7 @@ export default function AuditTrailIndex({
                         <BulkActions
                             selectedCount={selectedAuditTrails.length}
                             onBulkDelete={
-                                auth.user.permissions.includes(
-                                    "manage audit trail"
-                                )
+                                hasPermission("manage audit trail")
                                     ? openBulkDeleteModal
                                     : null
                             }

@@ -100,6 +100,143 @@ export default function AdminLayout({ children, title }) {
         return roles.some((role) => auth.user.roles.includes(role));
     };
 
+    // Fungsi untuk mendapatkan warna event
+    const getEventColor = (event) => {
+        const colorMap = {
+            created: "success",
+            login: "success",
+            approved: "success",
+            updated: "warning",
+            restored: "warning",
+            imported: "warning",
+            deleted: "error",
+            logout: "error",
+            rejected: "error",
+            viewed: "info",
+            downloaded: "info",
+            exported: "primary",
+        };
+        return colorMap[event] || "neutral";
+    };
+
+    // Fungsi untuk mendapatkan ikon event
+    const getEventIcon = (event) => {
+        const iconMap = {
+            created: (
+                <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                </svg>
+            ),
+            updated: (
+                <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                </svg>
+            ),
+            deleted: (
+                <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                </svg>
+            ),
+            login: (
+                <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    />
+                </svg>
+            ),
+            logout: (
+                <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                </svg>
+            ),
+            viewed: (
+                <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                </svg>
+            ),
+            default: (
+                <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                </svg>
+            ),
+        };
+        return iconMap[event] || iconMap.default;
+    };
+
     return (
         <>
             <Head>
@@ -289,6 +426,40 @@ export default function AdminLayout({ children, title }) {
                                     </Link>
                                 </li>
                             )}
+
+                            {/* Menu Audit Trail */}
+                            {hasPermission("view audit trails") && (
+                                <li>
+                                    <Link
+                                        href={route("admin.audit-trail.index")}
+                                        className={`flex items-center p-2 rounded-md transition-colors duration-200 ${
+                                            isActive("admin.audit-trail.*")
+                                                ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-200 border-r-4 border-primary-600 dark:border-primary-400"
+                                                : "hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300"
+                                        }`}
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-5 w-5"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                        <span
+                                            className={`ml-3 ${
+                                                sidebarExpanded ? "" : "hidden"
+                                            }`}
+                                        >
+                                            Audit Trail
+                                        </span>
+                                    </Link>
+                                </li>
+                            )}
                         </ul>
                     </nav>
                 </div>
@@ -351,6 +522,7 @@ export default function AdminLayout({ children, title }) {
                                     )}
                                 </button>
 
+                                {/* Notifications Dropdown */}
                                 <div className="relative">
                                     <button
                                         onClick={() => {
@@ -378,7 +550,7 @@ export default function AdminLayout({ children, title }) {
 
                                     {/* Notifications Panel */}
                                     <div
-                                        className={`absolute right-0 mt-2 w-80 bg-white dark:bg-neutral-800 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 z-50 ${
+                                        className={`absolute right-0 mt-2 w-96 bg-white dark:bg-neutral-800 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 z-50 ${
                                             notificationsOpen
                                                 ? "block"
                                                 : "hidden"
@@ -387,7 +559,7 @@ export default function AdminLayout({ children, title }) {
                                         <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">
-                                                    Notifikasi
+                                                    Aktivitas Terbaru
                                                 </h3>
                                                 {unreadCount > 0 && (
                                                     <span className="text-xs bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 px-2 py-1 rounded-full">
@@ -421,7 +593,7 @@ export default function AdminLayout({ children, title }) {
                                                         />
                                                     </svg>
                                                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                                                        Belum ada notifikasi
+                                                        Belum ada aktivitas
                                                     </p>
                                                 </div>
                                             ) : (
@@ -445,26 +617,64 @@ export default function AdminLayout({ children, title }) {
                                                             >
                                                                 <div className="flex items-start space-x-3">
                                                                     <div
-                                                                        className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 bg-${notification.event_color}-500`}
-                                                                    ></div>
+                                                                        className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-${getEventColor(
+                                                                            notification.event
+                                                                        )}-100 dark:bg-${getEventColor(
+                                                                            notification.event
+                                                                        )}-900 text-${getEventColor(
+                                                                            notification.event
+                                                                        )}-600 dark:text-${getEventColor(
+                                                                            notification.event
+                                                                        )}-400`}
+                                                                    >
+                                                                        {getEventIcon(
+                                                                            notification.event
+                                                                        )}
+                                                                    </div>
                                                                     <div className="flex-1 min-w-0">
-                                                                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                                                                            {notification.user
-                                                                                ? notification
-                                                                                      .user
-                                                                                      .name
-                                                                                : "Sistem"}
-                                                                        </p>
-                                                                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                                                                        <div className="flex items-center justify-between">
+                                                                            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                                                                                {notification.user
+                                                                                    ? notification
+                                                                                          .user
+                                                                                          .name
+                                                                                    : "Sistem"}
+                                                                            </p>
+                                                                            <span className="text-xs text-neutral-500 dark:text-neutral-500">
+                                                                                {
+                                                                                    notification.created_at_human
+                                                                                }
+                                                                            </span>
+                                                                        </div>
+                                                                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 line-clamp-2">
                                                                             {
-                                                                                notification.message
+                                                                                notification.description
                                                                             }
                                                                         </p>
-                                                                        <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
-                                                                            {
-                                                                                notification.created_at_human
-                                                                            }
-                                                                        </p>
+                                                                        <div className="flex items-center mt-1 space-x-2">
+                                                                            <span
+                                                                                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-${getEventColor(
+                                                                                    notification.event
+                                                                                )}-100 dark:bg-${getEventColor(
+                                                                                    notification.event
+                                                                                )}-900 text-${getEventColor(
+                                                                                    notification.event
+                                                                                )}-800 dark:text-${getEventColor(
+                                                                                    notification.event
+                                                                                )}-200`}
+                                                                            >
+                                                                                {
+                                                                                    notification.event_display_name
+                                                                                }
+                                                                            </span>
+                                                                            {notification.auditable_type_display_name && (
+                                                                                <span className="text-xs text-neutral-500 dark:text-neutral-500">
+                                                                                    {
+                                                                                        notification.auditable_type_display_name
+                                                                                    }
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </Link>
@@ -484,7 +694,7 @@ export default function AdminLayout({ children, title }) {
                                                     setNotificationsOpen(false)
                                                 }
                                             >
-                                                Lihat semua notifikasi
+                                                Lihat semua aktivitas
                                                 <svg
                                                     className="w-4 h-4 ml-1"
                                                     fill="none"
@@ -503,6 +713,7 @@ export default function AdminLayout({ children, title }) {
                                     </div>
                                 </div>
 
+                                {/* Profile Dropdown */}
                                 <div className="relative">
                                     <button
                                         onClick={() =>

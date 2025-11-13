@@ -6,34 +6,70 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('audit_trails', function (Blueprint $table) {
             $table->id();
-            $table->string('event'); // created, updated, deleted, login, logout
-            $table->string('table_name')->nullable(); // Nama tabel yang diubah
-            $table->json('old_values')->nullable(); // Data lama (untuk update/delete)
-            $table->json('new_values')->nullable(); // Data baru (untuk create/update)
-            $table->string('ip_address')->nullable();
+            
+            // User yang melakukan aksi
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('user_type')->nullable(); // Untuk polymorphic relationship
+            
+            // Event type
+            $table->enum('event', [
+                'created', 
+                'updated', 
+                'deleted', 
+                'restored', 
+                'login', 
+                'logout', 
+                'downloaded', 
+                'viewed',
+                'approved',
+                'rejected',
+                'exported',
+                'imported'
+            ])->index();
+            
+            // Model yang di-audit (polymorphic relationship)
+            $table->string('auditable_type')->nullable()->index();
+            $table->unsignedBigInteger('auditable_id')->nullable()->index();
+            
+            // User yang terkena dampak aksi (jika ada)
+            $table->foreignId('affected_user_id')->nullable()->constrained('users')->onDelete('set null');
+            
+            // Data changes
+            $table->json('old_values')->nullable();
+            $table->json('new_values')->nullable();
+            
+            // Context information
+            $table->string('ip_address', 45)->nullable(); // Support IPv6
             $table->text('user_agent')->nullable();
             $table->text('url')->nullable();
             $table->text('description')->nullable();
+            
+            // Additional metadata
+            $table->json('tags')->nullable(); // Untuk kategorisasi
+            $table->uuid('batch_uuid')->nullable(); // Group related events
+            
+            // Timestamps
+            $table->timestamp('created_at')->nullable();
 
-            // Foreign key ke user
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('affected_user_id')->nullable()->constrained('users')->onDelete('set null');
-
-            $table->timestamps();
-
-            // Index untuk performa query
-            $table->index(['event', 'table_name']);
-            $table->index('created_at');
-            $table->index('user_id');
-            $table->index('affected_user_id'); // Tambahan index
+            // Composite index untuk performa query
+            $table->index(['user_id', 'event']);
+            $table->index(['auditable_type', 'auditable_id', 'created_at']);
+            $table->index(['batch_uuid', 'created_at']);
+            $table->index(['event', 'created_at']);
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('audit_trails');
     }

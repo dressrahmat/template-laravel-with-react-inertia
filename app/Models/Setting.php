@@ -101,4 +101,10 @@ class Setting extends Model
     {
         return (bool) $this->maintenance_mode;
     }
+
+    // Tambahkan metode restored
+    public static function restored($callback)
+    {
+        static::registerModelEvent('restored', $callback);
+    }
 }
