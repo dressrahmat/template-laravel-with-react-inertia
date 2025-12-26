@@ -24,7 +24,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'foto_path', // Tambahkan ini
+        'foto_path',
+        'last_login_at',
+        'login_count',
     ];
 
     /**
@@ -47,6 +49,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_login_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * Custom method to get user's roles and permissions for audit
+     */
+    public function getRolePermissionData(): array
+    {
+        return [
+            'roles' => $this->getRoleNames()->toArray(),
+            'permissions' => $this->getPermissionNames()->toArray(),
         ];
     }
 }

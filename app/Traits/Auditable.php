@@ -35,9 +35,20 @@ trait Auditable
      */
     protected function logAuditEvent(string $event): void
     {
-        // Skip if no user is authenticated (e.g., console commands)
-        if (!Auth::check() && !app()->runningInConsole()) {
+        // Skip if no user is authenticated (e.g., console commands, login process)
+        if (!Auth::check()) {
             return;
+        }
+
+        // Skip if this is the User model and event is updated (to avoid duplicate logs for login)
+        if (get_class($this) === \App\Models\User::class && $event === 'updated') {
+            // Check if the update is just for login-related fields
+            $loginFields = ['last_login_at', 'login_count', 'remember_token'];
+            $changes = array_keys($this->getChanges());
+            
+            if (count(array_diff($changes, $loginFields)) === 0) {
+                return; // Skip if only login fields are updated
+            }
         }
 
         $changes = $this->getChangesForAudit($event);
@@ -137,5 +148,35 @@ trait Auditable
     public function creationAuditTrail()
     {
         return $this->morphOne(AuditTrail::class, 'auditable')->where('event', 'created');
+    }
+
+    /**
+     * Custom method to log role/permission changes
+     */
+    public function logRolePermissionChange(string $action, array $roles = [], array $permissions = [], ?string $description = null): void
+    {
+        if (!Auth::check()) {
+            return;
+        }
+
+        $changes = [
+            'roles' => $roles,
+            'permissions' => $permissions,
+        ];
+
+        AuditTrail::create([
+            'user_id' => Auth::id(),
+            'event' => $action,
+            'auditable_type' => get_class($this),
+            'auditable_id' => $this->getKey(),
+            'old_values' => null,
+            'new_values' => $changes,
+            'ip_address' => request()?->ip(),
+            'user_agent' => request()?->userAgent(),
+            'url' => request()?->fullUrl(),
+            'description' => $description ?: "{$action} roles/permissions for user #{$this->getKey()}",
+            'batch_uuid' => $this->getCurrentBatchUuid(),
+            'created_at' => now(),
+        ]);
     }
 }

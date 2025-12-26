@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Observers\UserObserver;
+use App\Services\UserRoleService;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(UserRoleService::class, function ($app) {
+            return new UserRoleService();
+        });
     }
 
     /**
@@ -21,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+        User::observe(UserObserver::class);
     }
 }

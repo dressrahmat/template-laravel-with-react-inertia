@@ -15,13 +15,13 @@ class SettingSeeder extends Seeder
 
         $settings = [
             // Informasi dasar website
-            'site_name' => 'TechSolution Inc.',
+            'site_name' => 'DedyTech Inc.',
             'site_description' => 'Solusi teknologi terdepan untuk bisnis modern Anda. Menyediakan layanan web development, mobile apps, dan konsultasi IT.',
             'site_logo' => 'logos/company-logo.png',
             'site_favicon' => 'favicons/favicon.ico',
-            'contact_email' => 'hello@techsolution.com',
-            'contact_phone' => '+62 21 1234 5678',
-            'address' => 'Gedung Tech Tower Lt. 15, Jl. Sudirman Kav. 52-53, Jakarta Selatan 12190',
+            'contact_email' => 'hello@dedytech.com',
+            'contact_phone' => '+62 895 3051 9448',
+            'address' => 'Perum De Prima, Tunggulwulung, Malang, Indonesia',
 
             // Google Analytics
             'google_analytics_id' => null,

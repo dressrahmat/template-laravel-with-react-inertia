@@ -25,6 +25,8 @@ import {
     FiDownload,
     FiMoreVertical,
     FiClock,
+    FiUser,
+    FiUsers,
 } from "react-icons/fi";
 import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
@@ -123,7 +125,7 @@ const RowActionsDropdown = ({ auditTrail, onView, onDelete, canManage }) => {
                     className="group flex items-center w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400"
                 >
                     <FiEye className="mr-3 h-4 w-4" aria-hidden="true" />
-                    Lihat
+                    Lihat Detail
                 </button>
                 {canManage && (
                     <button
@@ -131,7 +133,7 @@ const RowActionsDropdown = ({ auditTrail, onView, onDelete, canManage }) => {
                         className="group flex items-center w-full px-4 py-2 text-sm text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/30 hover:text-error-700 dark:hover:text-error-300"
                     >
                         <FiTrash2 className="mr-3 h-4 w-4" aria-hidden="true" />
-                        Hapus
+                        Hapus Log
                     </button>
                 )}
             </div>
@@ -206,11 +208,63 @@ const usePersistedSelectedAuditTrails = (initialValue = []) => {
     ];
 };
 
+// Komponen untuk menampilkan badge event
+const EventBadge = ({ event, eventDisplayName }) => {
+    const getEventColor = (event) => {
+        const colorMap = {
+            created: "success",
+            login: "success",
+            approved: "success",
+            updated: "warning",
+            restored: "warning",
+            imported: "warning",
+            deleted: "error",
+            logout: "error",
+            rejected: "error",
+            viewed: "info",
+            downloaded: "info",
+            exported: "primary",
+        };
+        return colorMap[event] || "neutral";
+    };
+
+    const color = getEventColor(event);
+
+    return (
+        <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${color}-100 dark:bg-${color}-900 text-${color}-800 dark:text-${color}-200`}
+        >
+            {eventDisplayName}
+        </span>
+    );
+};
+
+// Komponen untuk menampilkan informasi user
+const UserInfo = ({ user, label = "Pengguna" }) => {
+    if (!user) return null;
+
+    return (
+        <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
+                <FiUser className="w-3 h-3 text-primary-600 dark:text-primary-400" />
+            </div>
+            <div>
+                <div className="text-sm font-medium text-neutral-900 dark:text-white">
+                    {user.name}
+                </div>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                    {user.email}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default function AuditTrailIndex({
     auditTrails,
     filters: initialFilters,
     availableEvents,
-    availableTables,
+    availableAuditableTypes,
     auth,
 }) {
     const { props } = usePage();
@@ -238,7 +292,7 @@ export default function AuditTrailIndex({
     const [filters, setFilters] = useState({
         search: initialFilters?.search || "",
         event: initialFilters?.event || "",
-        table: initialFilters?.table || "",
+        auditable_type: initialFilters?.auditable_type || "",
         date: initialFilters?.date || "",
         per_page: initialFilters?.per_page || 10,
         sort: initialFilters?.sort || "created_at",
@@ -249,7 +303,7 @@ export default function AuditTrailIndex({
     const prevFiltersRef = useRef({
         search: initialFilters?.search || "",
         event: initialFilters?.event || "",
-        table: initialFilters?.table || "",
+        auditable_type: initialFilters?.auditable_type || "",
         date: initialFilters?.date || "",
         per_page: initialFilters?.per_page || 10,
         sort: initialFilters?.sort || "created_at",
@@ -269,7 +323,7 @@ export default function AuditTrailIndex({
         const currentFilters = {
             search: filters.search,
             event: filters.event,
-            table: filters.table,
+            auditable_type: filters.auditable_type,
             date: filters.date,
             per_page: filters.per_page,
             sort: filters.sort,
@@ -279,7 +333,8 @@ export default function AuditTrailIndex({
         const hasChanged =
             currentFilters.search !== prevFiltersRef.current.search ||
             currentFilters.event !== prevFiltersRef.current.event ||
-            currentFilters.table !== prevFiltersRef.current.table ||
+            currentFilters.auditable_type !==
+                prevFiltersRef.current.auditable_type ||
             currentFilters.date !== prevFiltersRef.current.date ||
             currentFilters.per_page !== prevFiltersRef.current.per_page ||
             currentFilters.sort !== prevFiltersRef.current.sort ||
@@ -406,16 +461,10 @@ export default function AuditTrailIndex({
         });
     }, []);
 
-    // PERBAIKAN: Gunakan DELETE method untuk single delete seperti di user controller
     const handleDelete = useCallback(() => {
         if (deleteModal.auditTrailId) {
             router.delete(
-                route("admin.audit-trail.cleanup"),
-                {
-                    data: {
-                        id: deleteModal.auditTrailId,
-                    },
-                },
+                route("admin.audit-trail.destroy", deleteModal.auditTrailId),
                 {
                     onSuccess: () => {
                         success("Log audit trail berhasil dihapus!");
@@ -441,15 +490,12 @@ export default function AuditTrailIndex({
         setSelectedAuditTrails,
     ]);
 
-    // PERBAIKAN: Gunakan method dan struktur yang sama seperti di user controller
     const handleBulkDelete = useCallback(() => {
         if (selectedAuditTrails.length > 0) {
-            router.delete(
-                route("admin.audit-trail.cleanup"),
+            router.post(
+                route("admin.audit-trail.bulk-delete"),
                 {
-                    data: {
-                        ids: selectedAuditTrails,
-                    },
+                    ids: selectedAuditTrails,
                 },
                 {
                     onSuccess: () => {
@@ -512,7 +558,7 @@ export default function AuditTrailIndex({
                     selectedAuditTrails.length > 0 ? selectedAuditTrails : null,
                 start_date: filters.date || null,
                 event: filters.event || null,
-                table: filters.table || null,
+                auditable_type: filters.auditable_type || null,
             },
             {
                 onSuccess: () => {
@@ -538,7 +584,7 @@ export default function AuditTrailIndex({
         setFilters({
             search: "",
             event: "",
-            table: "",
+            auditable_type: "",
             date: "",
             per_page: 10,
             sort: "created_at",
@@ -554,7 +600,7 @@ export default function AuditTrailIndex({
                     prevFiltersRef.current = {
                         search: "",
                         event: "",
-                        table: "",
+                        auditable_type: "",
                         date: "",
                         per_page: 10,
                         sort: "created_at",
@@ -596,61 +642,84 @@ export default function AuditTrailIndex({
                 onSort: () => handleSort("event"),
                 sortIcon: getSortIcon("event"),
                 render: (auditTrail) => (
-                    <div className="flex items-center">
-                        <div
-                            className={`w-2 h-2 rounded-full mr-2 bg-${auditTrail.event_color}-500`}
-                        ></div>
-                        <div className="text-sm font-medium text-neutral-900 dark:text-white">
-                            {availableEvents[auditTrail.event] ||
-                                auditTrail.event}
+                    <div className="flex items-center space-x-3">
+                        <EventBadge
+                            event={auditTrail.event}
+                            eventDisplayName={auditTrail.event_display_name}
+                        />
+                        <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                            {auditTrail.auditable_type_display_name}
+                            {auditTrail.auditable_id &&
+                                ` #${auditTrail.auditable_id}`}
                         </div>
                     </div>
                 ),
             },
             {
-                key: "table_name",
-                label: "Tabel",
-                sortable: true,
-                onSort: () => handleSort("table_name"),
-                sortIcon: getSortIcon("table_name"),
+                key: "description",
+                label: "Deskripsi",
                 render: (auditTrail) => (
-                    <div className="text-sm text-neutral-900 dark:text-white">
-                        {auditTrail.table_display_name}
+                    <div className="text-sm text-neutral-900 dark:text-white line-clamp-2">
+                        {auditTrail.description ||
+                            auditTrail.readable_description}
                     </div>
                 ),
             },
             {
                 key: "user",
                 label: "Pengguna",
-                render: (auditTrail) => (
-                    <div className="text-sm text-neutral-900 dark:text-white">
-                        {auditTrail.user ? auditTrail.user.name : "Sistem"}
-                    </div>
-                ),
+                render: (auditTrail) => <UserInfo user={auditTrail.user} />,
+            },
+            {
+                key: "affected_user",
+                label: "User Terdampak",
+                render: (auditTrail) =>
+                    auditTrail.affected_user ? (
+                        <UserInfo
+                            user={auditTrail.affected_user}
+                            label="Terdampak"
+                        />
+                    ) : (
+                        <div className="text-sm text-neutral-400 dark:text-neutral-500">
+                            -
+                        </div>
+                    ),
             },
             {
                 key: "created_at",
-                label: "Tanggal",
+                label: "Waktu",
                 sortable: true,
                 onSort: () => handleSort("created_at"),
                 sortIcon: getSortIcon("created_at"),
                 render: (auditTrail) => (
                     <div className="text-sm text-neutral-500 dark:text-neutral-400">
-                        {new Date(auditTrail.created_at).toLocaleDateString(
-                            "id-ID",
-                            {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            }
-                        )}
+                        <div className="font-medium">
+                            {new Date(auditTrail.created_at).toLocaleDateString(
+                                "id-ID",
+                                {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                }
+                            )}
+                        </div>
+                        <div>
+                            {new Date(auditTrail.created_at).toLocaleTimeString(
+                                "id-ID",
+                                {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                }
+                            )}
+                        </div>
+                        <div className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                            {auditTrail.created_at_human}
+                        </div>
                     </div>
                 ),
             },
         ],
-        [handleSort, getSortIcon, availableEvents]
+        [handleSort, getSortIcon]
     );
 
     const emptyState = useMemo(
@@ -674,9 +743,13 @@ export default function AuditTrailIndex({
                     router.visit(route("admin.audit-trail.show", auditTrail.id))
                 }
                 onDelete={() =>
-                    openDeleteModal(auditTrail.id, auditTrail.message)
+                    openDeleteModal(
+                        auditTrail.id,
+                        auditTrail.description ||
+                            auditTrail.readable_description
+                    )
                 }
-                canManage={hasPermission("manage audit trail")}
+                canManage={hasPermission("delete audit trails")}
             />
         ),
         [openDeleteModal]
@@ -694,10 +767,10 @@ export default function AuditTrailIndex({
                     onPerPageChange={handlePerPageChange}
                     onClearFilters={clearFilters}
                     additionalFilters={
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Peristiwa
+                                    Jenis Peristiwa
                                 </label>
                                 <select
                                     value={filters.event}
@@ -721,31 +794,31 @@ export default function AuditTrailIndex({
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Tabel
+                                    Tipe Data
                                 </label>
                                 <select
-                                    value={filters.table}
+                                    value={filters.auditable_type}
                                     onChange={(e) =>
                                         handleFilterChange(
-                                            "table",
+                                            "auditable_type",
                                             e.target.value
                                         )
                                     }
                                     className="mt-1 block w-full rounded-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
                                 >
-                                    <option value="">Semua Tabel</option>
-                                    {Object.entries(availableTables).map(
-                                        ([key, value]) => (
-                                            <option key={key} value={key}>
-                                                {value}
-                                            </option>
-                                        )
-                                    )}
+                                    <option value="">Semua Tipe Data</option>
+                                    {Object.entries(
+                                        availableAuditableTypes
+                                    ).map(([key, value]) => (
+                                        <option key={key} value={key}>
+                                            {value}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Tanggal
+                                    Tanggal Mulai
                                 </label>
                                 <input
                                     type="date"
@@ -759,6 +832,37 @@ export default function AuditTrailIndex({
                                     className="mt-1 block w-full rounded-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
                                 />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                                    Urutkan Berdasarkan
+                                </label>
+                                <select
+                                    value={`${filters.sort}_${filters.direction}`}
+                                    onChange={(e) => {
+                                        const [sort, direction] =
+                                            e.target.value.split("_");
+                                        setFilters((prev) => ({
+                                            ...prev,
+                                            sort,
+                                            direction,
+                                        }));
+                                    }}
+                                    className="mt-1 block w-full rounded-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
+                                >
+                                    <option value="created_at_desc">
+                                        Terbaru
+                                    </option>
+                                    <option value="created_at_asc">
+                                        Terlama
+                                    </option>
+                                    <option value="event_asc">
+                                        Peristiwa A-Z
+                                    </option>
+                                    <option value="event_desc">
+                                        Peristiwa Z-A
+                                    </option>
+                                </select>
+                            </div>
                         </div>
                     }
                 />
@@ -767,11 +871,13 @@ export default function AuditTrailIndex({
         [
             filters.search,
             filters.event,
-            filters.table,
+            filters.auditable_type,
             filters.date,
             filters.per_page,
+            filters.sort,
+            filters.direction,
             availableEvents,
-            availableTables,
+            availableAuditableTypes,
             handleFilterChange,
             handlePerPageChange,
             clearFilters,
@@ -780,16 +886,25 @@ export default function AuditTrailIndex({
 
     const createButton = useMemo(
         () =>
-            hasPermission("manage audit trail") ? (
-                <PrimaryButton
-                    onClick={openCleanupModal}
-                    className="flex items-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-500"
-                >
-                    <FiClock className="mr-2 h-5 w-5" />
-                    Bersihkan Log
-                </PrimaryButton>
+            hasPermission("delete audit trails") ? (
+                <div className="flex space-x-3">
+                    <PrimaryButton
+                        onClick={openCleanupModal}
+                        className="flex items-center bg-warning-600 hover:bg-warning-700 focus:ring-warning-500"
+                    >
+                        <FiClock className="mr-2 h-5 w-5" />
+                        Bersihkan Log
+                    </PrimaryButton>
+                    <PrimaryButton
+                        onClick={handleExport}
+                        className="flex items-center bg-success-600 hover:bg-success-700 focus:ring-success-500"
+                    >
+                        <FiDownload className="mr-2 h-5 w-5" />
+                        Ekspor Data
+                    </PrimaryButton>
+                </div>
             ) : null,
-        [openCleanupModal]
+        [openCleanupModal, handleExport]
     );
 
     return (
@@ -806,7 +921,7 @@ export default function AuditTrailIndex({
                 cancelText="Batal"
             />
 
-            {hasPermission("manage audit trail") && (
+            {hasPermission("delete audit trails") && (
                 <ConfirmationModal
                     isOpen={bulkDeleteModal.isOpen}
                     onClose={closeBulkDeleteModal}
@@ -818,7 +933,7 @@ export default function AuditTrailIndex({
                 />
             )}
 
-            {hasPermission("manage audit trail") && (
+            {hasPermission("delete audit trails") && (
                 <CleanupModal
                     isOpen={cleanupModal.isOpen}
                     onClose={closeCleanupModal}
@@ -893,7 +1008,7 @@ export default function AuditTrailIndex({
                         <BulkActions
                             selectedCount={selectedAuditTrails.length}
                             onBulkDelete={
-                                hasPermission("manage audit trail")
+                                hasPermission("delete audit trails")
                                     ? openBulkDeleteModal
                                     : null
                             }
